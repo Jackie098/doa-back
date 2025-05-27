@@ -1,10 +1,6 @@
 package project.entities;
 
-import java.time.LocalDate;
-
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -16,7 +12,7 @@ import project.entities.enums.UserTypeEnum;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User extends BaseEntity {
   @Id
   @GeneratedValue
   public Long id;
@@ -46,9 +42,4 @@ public class User {
 
   @Column(columnDefinition = "boolean default false")
   public Boolean isCharityAgentMember;
-
-  @CreationTimestamp
-  public LocalDate createdAt;
-  @UpdateTimestamp
-  public LocalDate updatedAt;
 }
