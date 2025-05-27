@@ -13,7 +13,7 @@ import project.entities.enums.UserTypeEnum;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class TesteClass {
   @Id
   @GeneratedValue
   public Long id;
@@ -37,11 +37,7 @@ public class User {
 
   @Column(columnDefinition = "boolean default true")
   public Boolean isActive;
-
-  @Column(columnDefinition = "boolean default true")
   public Boolean firstAccess;
-
-  @Column(columnDefinition = "boolean default false")
   public Boolean isCharityAgentMember;
 
   public LocalDate createdAt;
