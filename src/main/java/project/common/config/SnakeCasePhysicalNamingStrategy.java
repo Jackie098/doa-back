@@ -1,4 +1,4 @@
-package project.config;
+package project.common.config;
 
 import org.hibernate.boot.model.naming.Identifier;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl;
