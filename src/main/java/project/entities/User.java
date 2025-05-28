@@ -34,7 +34,7 @@ public class User extends BaseEntity {
   @Column(nullable = false)
   public UserTypeEnum type;
 
-  @Column(columnDefinition = "boolean default true")
+  @Column(columnDefinition = "boolean default false")
   public Boolean isActive;
 
   @Column(columnDefinition = "boolean default true")

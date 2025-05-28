@@ -19,7 +19,7 @@ public class Person extends BaseEntity {
   @Column(nullable = false, unique = true)
   public String document;
 
-  @Column(nullable = false, unique = true)
+  @Column(nullable = false)
   public String name;
 
   @Column(nullable = true, unique = true)
