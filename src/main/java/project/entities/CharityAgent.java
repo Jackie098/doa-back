@@ -49,5 +49,6 @@ public class CharityAgent extends BaseEntity {
   @Column(unique = true)
   public String document;
 
+  @Column(unique = true)
   public String pixKey;
 }

@@ -1,5 +1,7 @@
 package project.entities;
 
+import org.hibernate.annotations.ColumnDefault;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -44,11 +46,14 @@ public class User extends BaseEntity {
   private UserTypeEnum type;
 
   @Column(columnDefinition = "boolean default false")
-  private Boolean isActive;
+  @Builder.Default
+  private Boolean isActive = false;
 
   @Column(columnDefinition = "boolean default true")
-  private Boolean firstAccess;
+  @Builder.Default
+  private Boolean firstAccess = true;
 
   @Column(columnDefinition = "boolean default false")
-  private Boolean isCharityAgentMember;
+  @Builder.Default
+  private Boolean isCharityAgentMember = false;
 }
