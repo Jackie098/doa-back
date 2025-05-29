@@ -5,6 +5,7 @@ import java.util.Optional;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import project.common.mappers.GenericMapper;
+import project.common.mappers.UserMapper;
 import project.dtos.user.CreateUserDTO;
 import project.entities.User;
 import project.repositories.UserRepository;
@@ -21,9 +22,11 @@ public class UserService {
     return userRepository.findByEmailOrPhoneNumber(email, phoneNumber);
   }
 
-  public void create(CreateUserDTO dto) {
-    User user = mapper.toObject(dto, User.class);
+  public User create(CreateUserDTO dto) {
+    User user = UserMapper.fromDTO(dto);
 
     userRepository.persist(user);
+
+    return user;
   }
 }

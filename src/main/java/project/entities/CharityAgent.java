@@ -9,10 +9,20 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import project.entities.enums.AgentStatusEnum;
 
 @Entity
 @Table(name = "charity_agents")
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+@Builder
+@EqualsAndHashCode(callSuper = true)
 public class CharityAgent extends BaseEntity {
   @Id
   @GeneratedValue
@@ -33,14 +43,11 @@ public class CharityAgent extends BaseEntity {
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
-  public AgentStatusEnum status;
+  @Builder.Default
+  public AgentStatusEnum status = AgentStatusEnum.AWAITING_VALIDATION;
 
   @Column(unique = true)
   public String document;
 
   public String pixKey;
-
-  public CharityAgent() {
-    System.out.println("CharityAgent loaded");
-  }
 }

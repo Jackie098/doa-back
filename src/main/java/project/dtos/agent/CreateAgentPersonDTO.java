@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CreateAgentPersonDTO {
   private String email;
+  private String name;
   private String document;
   private String phoneNumber;
 }

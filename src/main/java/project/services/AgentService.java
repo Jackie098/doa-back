@@ -6,6 +6,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.BadRequestException;
+import project.common.mappers.AgentMapper;
 import project.dtos.agent.CreateAgentDTO;
 import project.entities.CharityAgent;
 import project.repositories.AgentRepository;
@@ -16,8 +17,7 @@ public class AgentService {
   private UserService userService;
   @Inject
   private PersonService personService;
-  @Inject
-  private AgentService agentService;
+
   @Inject
   private AgentRepository agentRepository;
 
@@ -43,8 +43,13 @@ public class AgentService {
 
     System.out.println("Não existe nenhum dado correspondente, o cadastro pode seguir daqui...");
 
-    userService.create(dto.getUser());
+    var user = userService.create(dto.getUser());
+    System.out.println("user getId " + user.getId());
+    var person = personService.create(dto.getResponsibleLegal());
+    System.out.println("person getId " + person.getId());
 
+    var agent = AgentMapper.fromDTO(dto.getAgent(), person, user);
+    agentRepository.persist(agent);
     // var response = agentRepository.persist(dto.);
   }
 

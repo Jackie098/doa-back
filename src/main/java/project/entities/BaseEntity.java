@@ -11,7 +11,7 @@ import jakarta.persistence.MappedSuperclass;
 @MappedSuperclass
 public abstract class BaseEntity extends PanacheEntityBase {
   @CreationTimestamp
-  public LocalDate createdAt;
+  protected LocalDate createdAt;
   @UpdateTimestamp
-  public LocalDate updatedAt;
+  protected LocalDate updatedAt;
 }

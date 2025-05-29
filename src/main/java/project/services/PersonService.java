@@ -4,6 +4,8 @@ import java.util.Optional;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import project.common.mappers.PersonMapper;
+import project.dtos.agent.CreateAgentPersonDTO;
 import project.entities.Person;
 import project.repositories.PersonRepository;
 
@@ -14,5 +16,13 @@ public class PersonService {
 
   public Optional<Person> findByEmailOrDocumentOrPhone(String email, String document, String phoneNumber) {
     return personRepository.findByEmailOrDocumentOrPhone(email, document, phoneNumber);
+  }
+
+  public Person create(CreateAgentPersonDTO dto) {
+    Person person = PersonMapper.fromDTO(dto);
+
+    personRepository.persist(person);
+
+    return person;
   }
 }
