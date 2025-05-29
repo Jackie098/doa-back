@@ -50,7 +50,6 @@ public class AgentService {
 
     var agent = AgentMapper.fromDTO(dto.getAgent(), person, user);
     agentRepository.persist(agent);
-    // var response = agentRepository.persist(dto.);
   }
 
   public Optional<CharityAgent> findByDocument(String document) {
