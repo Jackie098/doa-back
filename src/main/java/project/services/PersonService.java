@@ -5,7 +5,7 @@ import java.util.Optional;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import project.common.mappers.PersonMapper;
-import project.dtos.agent.CreateAgentPersonDTO;
+import project.dtos.person.CreatePersonDTO;
 import project.entities.Person;
 import project.repositories.PersonRepository;
 
@@ -18,7 +18,7 @@ public class PersonService {
     return personRepository.findByEmailOrDocumentOrPhone(email, document, phoneNumber);
   }
 
-  public Person create(CreateAgentPersonDTO dto) {
+  public Person create(CreatePersonDTO dto) {
     Person person = PersonMapper.fromDTO(dto);
 
     personRepository.persist(person);

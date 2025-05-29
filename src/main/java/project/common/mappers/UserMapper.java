@@ -2,6 +2,7 @@ package project.common.mappers;
 
 import project.dtos.user.CreateUserDTO;
 import project.entities.User;
+import project.entities.enums.UserTypeEnum;
 
 public class UserMapper {
   public static User fromDTO(CreateUserDTO dto) {
@@ -9,7 +10,7 @@ public class UserMapper {
         .email(dto.getEmail())
         .password(dto.getPassword())
         .avatarUrl(dto.getAvatarUrl())
-        .type(dto.getType())
+        .type(UserTypeEnum.valueOf(dto.getType().toUpperCase()))
         .phoneNumber(dto.getPhoneNumber())
         .name(dto.getName())
         .build();

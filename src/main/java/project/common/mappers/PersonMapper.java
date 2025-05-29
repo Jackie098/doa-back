@@ -1,10 +1,10 @@
 package project.common.mappers;
 
-import project.dtos.agent.CreateAgentPersonDTO;
+import project.dtos.person.CreatePersonDTO;
 import project.entities.Person;
 
 public class PersonMapper {
-  public static Person fromDTO(CreateAgentPersonDTO dto) {
+  public static Person fromDTO(CreatePersonDTO dto) {
     return Person.builder()
         .email(dto.getEmail())
         .phoneNumber(dto.getPhoneNumber())
