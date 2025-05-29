@@ -6,6 +6,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import project.common.mappers.GenericMapper;
 import project.common.mappers.UserMapper;
+import project.common.utils.PasswordUtils;
 import project.dtos.user.CreateUserDTO;
 import project.entities.User;
 import project.repositories.UserRepository;
@@ -23,6 +24,8 @@ public class UserService {
   }
 
   public User create(CreateUserDTO dto) {
+    dto.setPassword(PasswordUtils.hashPass(dto.getPassword()));
+
     User user = UserMapper.fromDTO(dto);
 
     userRepository.persist(user);
