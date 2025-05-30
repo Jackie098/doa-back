@@ -9,7 +9,6 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import project.common.utils.MaskUtils;
 import project.dtos.agent.CreateAgentDTO;
 import project.services.AgentService;
 
@@ -23,12 +22,6 @@ public class AgentResource {
   @POST
   @Transactional
   public Response create(@Valid CreateAgentDTO dto) {
-    var cnpjUnmasked = MaskUtils.removeCnpjMask(dto.getAgent().getDocument());
-    dto.getAgent().setDocument(cnpjUnmasked);
-
-    var cpfUnmasked = MaskUtils.removeCpfMask(dto.getResponsibleLegal().getDocument());
-    dto.getResponsibleLegal().setDocument(cpfUnmasked);
-
     service.createAgent(dto);
 
     return Response.noContent().build();

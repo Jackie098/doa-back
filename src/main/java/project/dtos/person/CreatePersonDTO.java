@@ -1,10 +1,13 @@
 package project.dtos.person;
 
+import org.hibernate.validator.constraints.Length;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import project.common.annotations.UnmaskNumber;
 
 @Data
 @NoArgsConstructor
@@ -18,8 +21,11 @@ public class CreatePersonDTO {
   private String name;
 
   @NotBlank
+  @UnmaskNumber
   private String document;
 
   @NotBlank
+  @Length(min = 11, max = 14)
+  @UnmaskNumber
   private String phoneNumber;
 }

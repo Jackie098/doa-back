@@ -12,6 +12,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import project.common.annotations.UnmaskNumber;
 import project.entities.enums.AgentStatusEnum;
 
 @Entity
@@ -41,6 +42,7 @@ public class CharityAgent extends BaseEntity {
   public AgentStatusEnum status = AgentStatusEnum.AWAITING_VALIDATION;
 
   @Column(unique = true)
+  @UnmaskNumber
   public String document;
 
   @Column(unique = true)

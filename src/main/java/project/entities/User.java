@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import project.common.annotations.UnmaskNumber;
 import project.entities.enums.UserTypeEnum;
 
 @Entity
@@ -31,6 +32,7 @@ public class User extends BaseEntity {
 
   private String avatarUrl;
 
+  @UnmaskNumber
   private String phoneNumber;
 
   @Enumerated(EnumType.STRING)

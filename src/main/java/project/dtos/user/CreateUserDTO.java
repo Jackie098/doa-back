@@ -1,11 +1,14 @@
 package project.dtos.user;
 
+import org.hibernate.validator.constraints.Length;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import project.common.annotations.UnmaskNumber;
 import project.common.validators.EnumConstraint;
 import project.entities.enums.UserTypeEnum;
 
@@ -28,7 +31,8 @@ public class CreateUserDTO {
   private String type;
 
   @NotBlank
-  @Min(11)
+  @Length(min = 11, max = 14)
+  @UnmaskNumber
   private String phoneNumber;
 
   @NotBlank
