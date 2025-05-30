@@ -7,7 +7,9 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.BadRequestException;
 import project.common.mappers.AgentMapper;
+import project.dtos.agent.AgentMinResponseDTO;
 import project.dtos.agent.CreateAgentDTO;
+import project.dtos.agent.CreateAgentResponseDTO;
 import project.entities.CharityAgent;
 import project.repositories.AgentRepository;
 
@@ -22,7 +24,7 @@ public class AgentService {
   private AgentRepository agentRepository;
 
   @Transactional
-  public void createAgent(CreateAgentDTO dto) {
+  public CreateAgentResponseDTO createAgent(CreateAgentDTO dto) {
     userService
         .findByEmailOrPhoneNumber(dto.getUser().getEmail(), dto.getUser().getPhoneNumber())
         .ifPresent(user -> {
@@ -41,15 +43,14 @@ public class AgentService {
           throw new BadRequestException("Já existe um agente de caridade com este CNPJ.");
         });
 
-    System.out.println("Não existe nenhum dado correspondente, o cadastro pode seguir daqui...");
-
     var user = userService.create(dto.getUser());
-    System.out.println("user getId " + user.getId());
     var person = personService.create(dto.getResponsibleLegal());
-    System.out.println("person getId " + person.getId());
 
     var agent = AgentMapper.fromDTO(dto.getAgent(), person, user);
-    agentRepository.persist(agent);
+
+    agentRepository.persistAndFlush(agent);
+
+    return AgentMapper.fromEntityToResponse(user, person, agent);
   }
 
   public Optional<CharityAgent> findByDocument(String document) {

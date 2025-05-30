@@ -22,8 +22,8 @@ public class AgentResource {
   @POST
   @Transactional
   public Response create(@Valid CreateAgentDTO dto) {
-    service.createAgent(dto);
+    var response = service.createAgent(dto);
 
-    return Response.noContent().build();
+    return Response.ok(response).build();
   }
 }
