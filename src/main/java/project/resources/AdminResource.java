@@ -1,14 +1,19 @@
 package project.resources;
 
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 import project.common.requests.ResponseModel;
+import project.dtos.agent.AgentValidateDTO;
 import project.entities.enums.AgentStatusEnum;
 import project.services.AdminService;
 
@@ -26,5 +31,12 @@ public class AdminResource {
     var response = ResponseModel.success(Response.Status.OK.getStatusCode(), result);
 
     return Response.ok(response).build();
+  }
+
+  @PATCH
+  @Path("/agent/{id}/validate")
+  public Response validateAgent(@PathParam("id") Long agentId, @Valid AgentValidateDTO dto) {
+    service.validateAgent(dto, agentId);
+    return Response.status(Status.ACCEPTED.getStatusCode()).build();
   }
 }

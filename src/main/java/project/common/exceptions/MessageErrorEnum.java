@@ -4,6 +4,7 @@ public enum MessageErrorEnum {
   INTERNAL_ERROR("Erro inesperado no servidor."),
   USER_ALREADY_EXISTS("Um usuário já existe com estes dados."),
   LEGAL_RESPONSIBLE_ALREADY_EXISTS("Um responsável legal já existe com estes dados."),
+  AGENT_NOT_FOUND("Agente não encontrado!"),
   AGENT_ALREADY_EXISTS("Um agente de caridade já existe com estes dados.");
 
   public String message;

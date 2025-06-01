@@ -25,26 +25,26 @@ import project.entities.enums.AgentStatusEnum;
 public class CharityAgent extends BaseEntity {
   @OneToOne(optional = false)
   @JoinColumn(name = "legal_responsible_id", nullable = false)
-  public Person legalResponsible;
+  private Person legalResponsible;
 
   @OneToOne(optional = false)
   @JoinColumn(name = "user_id", nullable = false)
-  public User user;
+  private User user;
 
   @Column(nullable = false, unique = true)
-  public String slug;
+  private String slug;
 
-  public String url;
+  private String url;
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
   @Builder.Default
-  public AgentStatusEnum status = AgentStatusEnum.AWAITING_VALIDATION;
+  private AgentStatusEnum status = AgentStatusEnum.AWAITING_VALIDATION;
 
   @Column(unique = true)
   @UnmaskNumber
-  public String document;
+  private String document;
 
   @Column(unique = true)
-  public String pixKey;
+  private String pixKey;
 }

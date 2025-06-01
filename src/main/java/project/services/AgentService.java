@@ -68,6 +68,10 @@ public class AgentService {
     return AgentMapper.fromEntityToCreateResponse(agent);
   }
 
+  public Optional<CharityAgent> findById(Long id) {
+    return agentRepository.findByIdOptional(id);
+  }
+
   public Optional<CharityAgent> findByDocument(String document) {
     return agentRepository.findAgentByDocument(document);
   }
