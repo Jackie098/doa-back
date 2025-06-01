@@ -5,7 +5,8 @@ import java.util.Optional;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.BadRequestException;
+import project.common.exceptions.MessageErrorEnum;
+import project.common.exceptions.customs.BusinessException;
 import project.common.mappers.AgentMapper;
 import project.dtos.agent.CreateAgentDTO;
 import project.dtos.agent.CreateAgentResponseDTO;
@@ -27,19 +28,19 @@ public class AgentService {
     userService
         .findByEmailOrPhoneNumber(dto.getUser().getEmail(), dto.getUser().getPhoneNumber())
         .ifPresent(user -> {
-          throw new BadRequestException("Um usuário já existe com estes dados.");
+          throw new BusinessException(MessageErrorEnum.USER_ALREADY_EXISTS.getMessage(), 409);
         });
 
     personService
         .findByEmailOrDocumentOrPhone(dto.getResponsibleLegal().getEmail(),
             dto.getResponsibleLegal().getDocument(), dto.getResponsibleLegal().getPhoneNumber())
         .ifPresent(person -> {
-          throw new BadRequestException("Um responsável legal já existe com estes dados.");
+          throw new BusinessException(MessageErrorEnum.LEGAL_RESPONSIBLE_ALREADY_EXISTS.getMessage(), 409);
         });
 
-    this.findByDocument(dto.getAgent().getDocument())
+    this.findByDocumentAndPix(dto.getAgent().getDocument(), dto.getAgent().getPixKey())
         .ifPresent(agent -> {
-          throw new BadRequestException("Já existe um agente de caridade com este CNPJ.");
+          throw new BusinessException(MessageErrorEnum.AGENT_ALREADY_EXISTS.getMessage(), 409);
         });
 
     var user = userService.create(dto.getUser());
@@ -54,5 +55,9 @@ public class AgentService {
 
   public Optional<CharityAgent> findByDocument(String document) {
     return agentRepository.findAgentByDocument(document);
+  }
+
+  public Optional<CharityAgent> findByDocumentAndPix(String document, String pix) {
+    return agentRepository.findAgentByDocumentOrPix(document, pix);
   }
 }
