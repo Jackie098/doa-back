@@ -9,6 +9,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import project.common.requests.ResponseModel;
 import project.dtos.agent.CreateAgentDTO;
 import project.services.AgentService;
 
@@ -22,7 +23,9 @@ public class AgentResource {
   @POST
   @Transactional
   public Response create(@Valid CreateAgentDTO dto) {
-    var response = service.createAgent(dto);
+    var result = service.createAgent(dto);
+
+    var response = ResponseModel.success(Response.Status.OK.getStatusCode(), result);
 
     return Response.ok(response).build();
   }

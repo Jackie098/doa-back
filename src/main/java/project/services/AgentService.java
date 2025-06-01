@@ -7,7 +7,6 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.BadRequestException;
 import project.common.mappers.AgentMapper;
-import project.dtos.agent.AgentMinResponseDTO;
 import project.dtos.agent.CreateAgentDTO;
 import project.dtos.agent.CreateAgentResponseDTO;
 import project.entities.CharityAgent;
