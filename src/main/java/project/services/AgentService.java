@@ -12,6 +12,7 @@ import project.common.mappers.AgentMapper;
 import project.dtos.agent.AgentDTO;
 import project.dtos.agent.AgentCreateDTO;
 import project.entities.CharityAgent;
+import project.entities.enums.AgentStatusEnum;
 import project.repositories.AgentRepository;
 
 @ApplicationScoped
@@ -24,8 +25,14 @@ public class AgentService {
   @Inject
   private AgentRepository agentRepository;
 
-  public List<AgentDTO> listAgents() {
-    var result = agentRepository.listAll();
+  public List<AgentDTO> listAgents(AgentStatusEnum status) {
+    List<CharityAgent> result = null;
+    if (status == null) {
+      result = agentRepository.listAll();
+    } else {
+      result = agentRepository.find("status", status).list();
+    }
+
     var mappedResult = AgentMapper.fromEntityToListResponseDTO(result);
 
     return mappedResult;
