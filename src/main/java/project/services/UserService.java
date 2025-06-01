@@ -7,7 +7,7 @@ import jakarta.inject.Inject;
 import project.common.mappers.GenericMapper;
 import project.common.mappers.UserMapper;
 import project.common.utils.PasswordUtils;
-import project.dtos.user.CreateUserDTO;
+import project.dtos.user.UserCreateDTO;
 import project.entities.User;
 import project.repositories.UserRepository;
 
@@ -23,7 +23,7 @@ public class UserService {
     return userRepository.findByEmailOrPhoneNumber(email, phoneNumber);
   }
 
-  public User create(CreateUserDTO dto) {
+  public User create(UserCreateDTO dto) {
     dto.setPassword(PasswordUtils.hashPass(dto.getPassword()));
 
     User user = UserMapper.fromDTO(dto);

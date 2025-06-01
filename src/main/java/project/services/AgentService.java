@@ -9,9 +9,8 @@ import jakarta.transaction.Transactional;
 import project.common.exceptions.MessageErrorEnum;
 import project.common.exceptions.customs.BusinessException;
 import project.common.mappers.AgentMapper;
-import project.dtos.agent.AgentResponseDTO;
-import project.dtos.agent.CreateAgentDTO;
-import project.dtos.agent.CreateAgentResponseDTO;
+import project.dtos.agent.AgentDTO;
+import project.dtos.agent.AgentCreateDTO;
 import project.entities.CharityAgent;
 import project.repositories.AgentRepository;
 
@@ -25,7 +24,7 @@ public class AgentService {
   @Inject
   private AgentRepository agentRepository;
 
-  public List<AgentResponseDTO> listAgents() {
+  public List<AgentDTO> listAgents() {
     var result = agentRepository.listAll();
     var mappedResult = AgentMapper.fromEntityToListResponseDTO(result);
 
@@ -33,7 +32,7 @@ public class AgentService {
   }
 
   @Transactional
-  public CreateAgentResponseDTO createAgent(CreateAgentDTO dto) {
+  public AgentDTO createAgent(AgentCreateDTO dto) {
     userService
         .findByEmailOrPhoneNumber(dto.getUser().getEmail(), dto.getUser().getPhoneNumber())
         .ifPresent(user -> {
@@ -47,7 +46,7 @@ public class AgentService {
           throw new BusinessException(MessageErrorEnum.LEGAL_RESPONSIBLE_ALREADY_EXISTS.getMessage(), 409);
         });
 
-    this.findByDocumentAndPix(dto.getAgent().getDocument(), dto.getAgent().getPixKey())
+    this.findByDocumentAndPix(dto.getDocument(), dto.getPixKey())
         .ifPresent(agent -> {
           throw new BusinessException(MessageErrorEnum.AGENT_ALREADY_EXISTS.getMessage(), 409);
         });
@@ -55,7 +54,7 @@ public class AgentService {
     var user = userService.create(dto.getUser());
     var person = personService.create(dto.getResponsibleLegal());
 
-    var agent = AgentMapper.fromDTO(dto.getAgent(), person, user);
+    var agent = AgentMapper.fromDTO(dto, person, user);
 
     agentRepository.persistAndFlush(agent);
 

@@ -6,21 +6,21 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import project.common.annotations.Mask;
 import project.common.annotations.enums.MaskType;
-import project.dtos.person.PersonMinResponseDTO;
-import project.dtos.user.UserMinResponseDTO;
+import project.dtos.person.PersonMinDTO;
+import project.dtos.user.UserMinDTO;
 import project.entities.enums.AgentStatusEnum;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AgentResponseDTO {
+public class AgentDTO {
   private Long id;
 
   @Mask(MaskType.CNPJ)
   private String document;
   private AgentStatusEnum status;
 
-  private UserMinResponseDTO user;
-  private PersonMinResponseDTO person;
+  private UserMinDTO user;
+  private PersonMinDTO person;
 }

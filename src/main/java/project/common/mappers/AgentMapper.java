@@ -2,46 +2,46 @@ package project.common.mappers;
 
 import java.util.List;
 
-import project.dtos.agent.AgentMinResponseDTO;
-import project.dtos.agent.CreateAgentDataDTO;
-import project.dtos.agent.CreateAgentResponseDTO;
-import project.dtos.agent.AgentResponseDTO;
+import project.dtos.agent.AgentMinDTO;
+import project.dtos.agent.AgentCreateDTO;
+import project.dtos.agent.AgentDTO;
 import project.entities.CharityAgent;
 import project.entities.Person;
 import project.entities.User;
 
 public class AgentMapper {
-  public static CharityAgent fromDTO(CreateAgentDataDTO dto, Person person, User user) {
+  public static CharityAgent fromDTO(AgentCreateDTO dto, Person person, User user) {
     return CharityAgent.builder()
-        .legalResponsible(person)
-        .user(user)
         .slug(dto.getSlug())
         .url(dto.getUrl())
         .document(dto.getDocument())
         .pixKey(dto.getPixKey())
+        .legalResponsible(person)
+        .user(user)
         .build();
   }
 
-  public static CreateAgentResponseDTO fromEntityToCreateResponse(CharityAgent agent) {
-    var userResponseDto = UserMapper.fromEntityToMinimal(agent.getUser());
-    var personResponseDto = PersonMapper.fromEntityToMinimal(agent.getLegalResponsible());
-    var agentResponseDto = AgentMapper.fromEntityToMinimal(agent);
+  public static AgentDTO fromEntityToCreateResponse(CharityAgent data) {
+    var userResponseDto = UserMapper.fromEntityToMinimal(data.getUser());
+    var personResponseDto = PersonMapper.fromEntityToMinimal(data.getLegalResponsible());
 
-    return CreateAgentResponseDTO.builder()
+    return AgentDTO.builder()
+        .id(data.getId())
+        .document(data.getDocument())
+        .status(data.getStatus())
         .user(userResponseDto)
         .person(personResponseDto)
-        .agent(agentResponseDto)
         .build();
   }
 
-  public static List<AgentResponseDTO> fromEntityToListResponseDTO(List<CharityAgent> agents) {
+  public static List<AgentDTO> fromEntityToListResponseDTO(List<CharityAgent> agents) {
     return agents.stream()
         .map(agent -> fromEntityToResponse(agent))
         .toList();
   }
 
-  public static AgentResponseDTO fromEntityToResponse(CharityAgent agent) {
-    return AgentResponseDTO.builder()
+  public static AgentDTO fromEntityToResponse(CharityAgent agent) {
+    return AgentDTO.builder()
         .id(agent.getId())
         .document(agent.getDocument())
         .status(agent.getStatus())
@@ -50,10 +50,10 @@ public class AgentMapper {
         .build();
   }
 
-  public static AgentMinResponseDTO fromEntityToMinimal(CharityAgent agent) {
-    return AgentMinResponseDTO.builder()
+  public static AgentMinDTO fromEntityToMinimal(CharityAgent agent) {
+    return AgentMinDTO.builder()
         .id(agent.getId())
-        .status(agent.getStatus())
+        .document(agent.getDocument())
         .build();
   }
 }
