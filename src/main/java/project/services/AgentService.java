@@ -1,5 +1,6 @@
 package project.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -8,6 +9,7 @@ import jakarta.transaction.Transactional;
 import project.common.exceptions.MessageErrorEnum;
 import project.common.exceptions.customs.BusinessException;
 import project.common.mappers.AgentMapper;
+import project.dtos.agent.AgentResponseDTO;
 import project.dtos.agent.CreateAgentDTO;
 import project.dtos.agent.CreateAgentResponseDTO;
 import project.entities.CharityAgent;
@@ -22,6 +24,13 @@ public class AgentService {
 
   @Inject
   private AgentRepository agentRepository;
+
+  public List<AgentResponseDTO> listAgents() {
+    var result = agentRepository.listAll();
+    var mappedResult = AgentMapper.fromEntityToListResponseDTO(result);
+
+    return mappedResult;
+  }
 
   @Transactional
   public CreateAgentResponseDTO createAgent(CreateAgentDTO dto) {
@@ -50,7 +59,7 @@ public class AgentService {
 
     agentRepository.persistAndFlush(agent);
 
-    return AgentMapper.fromEntityToResponse(user, person, agent);
+    return AgentMapper.fromEntityToCreateResponse(agent);
   }
 
   public Optional<CharityAgent> findByDocument(String document) {
