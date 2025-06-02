@@ -51,6 +51,10 @@ public class AgentService {
     return agentRepository.findAgentByDocumentOrPix(document, pix);
   }
 
+  public Optional<CharityAgent> findByUser(User user) {
+    return agentRepository.find("user", user).firstResultOptional();
+  }
+
   @Transactional
   public AgentDTO createAgent(AgentCreateDTO dto) {
     userService
