@@ -23,7 +23,6 @@ public class AuthService {
       throw new BusinessException(MessageErrorEnum.USER_PASS_NOT_MATCH.getMessage(), 400);
     }
 
-    // Generate token here
     String token = TokenUtils.generateToken(user);
 
     return AuthDTO.builder().token(token).build();
