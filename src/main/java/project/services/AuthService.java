@@ -1,7 +1,5 @@
 package project.services;
 
-import java.util.Optional;
-
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import project.common.exceptions.MessageErrorEnum;
@@ -16,9 +14,6 @@ import project.entities.User;
 public class AuthService {
   @Inject
   private UserService userService;
-
-  // @Inject
-  // private TokenUtils tokenUtils;
 
   public AuthDTO signIn(AuthCreateDTO dto) {
     User user = userService.findByEmailOrPhoneNumber(dto.getEmail(), null)
