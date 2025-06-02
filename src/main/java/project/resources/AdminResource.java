@@ -1,5 +1,6 @@
 package project.resources;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
@@ -18,6 +19,7 @@ import project.entities.enums.AgentStatusEnum;
 import project.services.AdminService;
 
 @Path("/admin")
+@RolesAllowed({ "ADM" })
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class AdminResource {
@@ -28,7 +30,7 @@ public class AdminResource {
   @Path("/agent")
   public Response listAgents(@QueryParam("status") AgentStatusEnum status) {
     var result = service.listAgents(status);
-    var response = ResponseModel.success(Response.Status.OK.getStatusCode(), result);
+    var response = ResponseModel.success(Status.OK.getStatusCode(), result);
 
     return Response.ok(response).build();
   }

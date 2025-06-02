@@ -1,6 +1,6 @@
 package project.resources;
 
-import io.quarkus.security.Authenticated;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -15,7 +15,7 @@ import project.dtos.agent.AgentCreateDTO;
 import project.services.AgentService;
 
 @Path("/agent")
-@Authenticated
+@RolesAllowed({ "CHARITY_AGENT" })
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class AgentResource {
