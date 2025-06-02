@@ -1,39 +1,29 @@
-package project.dtos.user;
-
-import org.hibernate.validator.constraints.Length;
+package project.dtos.auth;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import project.common.annotations.UnmaskNumber;
 import project.common.validators.EnumConstraint;
 import project.entities.enums.UserTypeEnum;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserCreateDTO {
+public class AuthCreateDTO {
   @NotBlank
   @Email
   private String email;
 
   @NotBlank
-  @Length(min = 8, max = 16)
+  @Min(value = 8)
   private String password;
 
-  private String avatarUrl;
-
   @NotBlank
-  @EnumConstraint(enumClass = UserTypeEnum.class, message = "User type invalid")
+  @EnumConstraint(enumClass = UserTypeEnum.class, message = "Tipo de usuário inválido")
   private String type;
-
-  @NotBlank
-  @Length(min = 11, max = 14)
-  @UnmaskNumber
-  private String phoneNumber;
-
-  @NotBlank
-  private String name;
 }

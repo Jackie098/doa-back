@@ -1,16 +1,17 @@
 package project.common.database.seeds;
 
+import java.time.Instant;
+
+import io.quarkus.runtime.Startup;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
-import project.entities.User;
-import project.entities.Person;
 import project.entities.CharityAgent;
+import project.entities.Person;
+import project.entities.User;
 import project.entities.enums.AgentStatusEnum;
 import project.entities.enums.UserTypeEnum;
 
-import java.time.Instant;
-import java.util.List;
-
+@Startup
 @ApplicationScoped
 public class SeederService {
 
@@ -29,7 +30,7 @@ public class SeederService {
       User user = new User();
       user.setName("Agente " + i);
       user.setEmail("agente" + i + "@email.com");
-      user.setPassword("$2a$12$7YkdszN6Qo3bZsXNCHci5.7vA2bsYdq8VWwqKMbRuzjY8XxlHaE1i"); // bcrypt de "senha123"
+      user.setPassword("$2a$12$AUBavi4Bm4tmciYwUKvK3O.RRvOx3LlSAe.fT8p3OE/ZLa8yEYU/q"); // bcrypt de "12345678"
       user.setPhoneNumber("8999111111" + i);
       user.setType(UserTypeEnum.CHARITY_AGENT);
       user.setIsActive(i % 2 == 0);

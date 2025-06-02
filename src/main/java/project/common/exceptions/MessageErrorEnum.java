@@ -2,6 +2,9 @@ package project.common.exceptions;
 
 public enum MessageErrorEnum {
   INTERNAL_ERROR("Erro inesperado no servidor."),
+  USER_NOT_FOUND("Usuário não encontrado."),
+  USER_PASS_NOT_MATCH("Dados de login estão errados!"),
+  USER_TYPE_ENUM_INVALID("Tipo de usuário inválido."),
   USER_ALREADY_EXISTS("Um usuário já existe com estes dados."),
   LEGAL_RESPONSIBLE_ALREADY_EXISTS("Um responsável legal já existe com estes dados."),
   AGENT_NOT_FOUND("Agente não encontrado!"),
