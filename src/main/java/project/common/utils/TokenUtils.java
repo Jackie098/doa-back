@@ -1,5 +1,7 @@
 package project.common.utils;
 
+import java.time.Duration;
+
 import io.smallrye.jwt.build.Jwt;
 import project.entities.User;
 
@@ -8,6 +10,7 @@ public class TokenUtils {
     String token = Jwt.issuer("sign-in")
         .upn(user.getEmail())
         .groups(user.getType().toString())
+        .expiresIn(Duration.ofDays(2))
         .sign();
 
     return token;
