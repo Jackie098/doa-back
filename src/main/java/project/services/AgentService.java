@@ -12,6 +12,7 @@ import project.common.mappers.AgentMapper;
 import project.dtos.agent.AgentDTO;
 import project.dtos.agent.AgentCreateDTO;
 import project.entities.CharityAgent;
+import project.entities.User;
 import project.entities.enums.AgentStatusEnum;
 import project.repositories.AgentRepository;
 
@@ -36,6 +37,18 @@ public class AgentService {
     var mappedResult = AgentMapper.fromEntityToListResponseDTO(result);
 
     return mappedResult;
+  }
+
+  public Optional<CharityAgent> findById(Long id) {
+    return agentRepository.findByIdOptional(id);
+  }
+
+  public Optional<CharityAgent> findByDocument(String document) {
+    return agentRepository.findAgentByDocument(document);
+  }
+
+  public Optional<CharityAgent> findByDocumentAndPix(String document, String pix) {
+    return agentRepository.findAgentByDocumentOrPix(document, pix);
   }
 
   @Transactional
@@ -68,15 +81,15 @@ public class AgentService {
     return AgentMapper.fromEntityToCreateResponse(agent);
   }
 
-  public Optional<CharityAgent> findById(Long id) {
-    return agentRepository.findByIdOptional(id);
-  }
+  @Transactional
+  public void disableFirstAccess(String email) {
+    User user = userService.findByEmailOrPhoneNumber(email, null)
+        .orElseThrow(() -> new BusinessException(MessageErrorEnum.USER_NOT_FOUND.getMessage(), 404));
 
-  public Optional<CharityAgent> findByDocument(String document) {
-    return agentRepository.findAgentByDocument(document);
-  }
+    if (!user.getIsActive()) {
+      throw new BusinessException(MessageErrorEnum.ACCOUNT_INVALID_TO_ACTION.getMessage(), 403);
+    }
 
-  public Optional<CharityAgent> findByDocumentAndPix(String document, String pix) {
-    return agentRepository.findAgentByDocumentOrPix(document, pix);
+    user.setFirstAccess(false);
   }
 }
