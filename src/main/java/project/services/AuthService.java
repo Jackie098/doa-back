@@ -25,6 +25,6 @@ public class AuthService {
 
     String token = TokenUtils.generateToken(user);
 
-    return AuthDTO.builder().token(token).build();
+    return AuthDTO.builder().accessToken(token).build();
   }
 }
