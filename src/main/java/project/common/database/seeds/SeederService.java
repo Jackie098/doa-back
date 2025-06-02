@@ -21,10 +21,6 @@ public class SeederService {
       return;
     }
 
-    // List<User> users = null;
-    // List<Person> persons = null;
-    // List<CharityAgent> agents = null;
-
     for (int i = 1; i <= 5; i++) {
       // Criar usuário
       User user = new User();
@@ -36,7 +32,6 @@ public class SeederService {
       user.setIsActive(i % 2 == 0);
       user.setCreatedAt(Instant.now());
       user.setUpdatedAt(Instant.now());
-      // users.add(user);
       user.persist();
 
       // Criar pessoa
@@ -48,7 +43,6 @@ public class SeederService {
       person.setDocument("1234567890" + i);
       person.setCreatedAt(Instant.now());
       person.setUpdatedAt(Instant.now());
-      // persons.add(person);
       person.persist();
 
       // Criar agente
@@ -60,12 +54,22 @@ public class SeederService {
       agent.setLegalResponsible(person);
       agent.setCreatedAt(Instant.now());
       agent.setUpdatedAt(Instant.now());
-      // agents.add(agent);
       agent.persist();
     }
 
-    // User.persist(users);
-    // Person.persist(persons);
-    // CharityAgent.persist(agents);
+    saveAdmin();
+  }
+
+  public void saveAdmin() {
+    User user = new User();
+    user.setName("Carlos Augusto");
+    user.setEmail("carlosmiranda19122@gmail.com");
+    user.setPassword("$2a$12$AUBavi4Bm4tmciYwUKvK3O.RRvOx3LlSAe.fT8p3OE/ZLa8yEYU/q"); // bcrypt de "12345678"
+    user.setPhoneNumber("89994138240");
+    user.setType(UserTypeEnum.ADM);
+    user.setIsActive(true);
+    user.setCreatedAt(Instant.now());
+    user.setUpdatedAt(Instant.now());
+    user.persist();
   }
 }
