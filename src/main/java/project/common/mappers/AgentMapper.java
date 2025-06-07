@@ -2,12 +2,12 @@ package project.common.mappers;
 
 import java.util.List;
 
-import project.dtos.agent.AgentMinDTO;
-import project.dtos.agent.AgentCreateDTO;
-import project.dtos.agent.AgentDTO;
-import project.entities.CharityAgent;
-import project.entities.Person;
-import project.entities.User;
+import project.v1.dtos.agent.AgentCreateDTO;
+import project.v1.dtos.agent.AgentDTO;
+import project.v1.dtos.agent.AgentMinDTO;
+import project.v1.entities.CharityAgent;
+import project.v1.entities.Person;
+import project.v1.entities.User;
 
 public class AgentMapper {
   public static CharityAgent fromDTO(AgentCreateDTO dto, Person person, User user) {

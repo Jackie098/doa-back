@@ -1,8 +1,8 @@
 package project.common.mappers;
 
-import project.dtos.person.PersonCreateDTO;
-import project.dtos.person.PersonMinDTO;
-import project.entities.Person;
+import project.v1.dtos.person.PersonCreateDTO;
+import project.v1.dtos.person.PersonMinDTO;
+import project.v1.entities.Person;
 
 public class PersonMapper {
   public static Person fromDTO(PersonCreateDTO dto) {

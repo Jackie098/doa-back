@@ -5,11 +5,11 @@ import java.time.Instant;
 import io.quarkus.runtime.Startup;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
-import project.entities.CharityAgent;
-import project.entities.Person;
-import project.entities.User;
-import project.entities.enums.AgentStatusEnum;
-import project.entities.enums.UserTypeEnum;
+import project.v1.entities.CharityAgent;
+import project.v1.entities.Person;
+import project.v1.entities.User;
+import project.v1.entities.enums.AgentStatusEnum;
+import project.v1.entities.enums.UserTypeEnum;
 
 @Startup
 @ApplicationScoped

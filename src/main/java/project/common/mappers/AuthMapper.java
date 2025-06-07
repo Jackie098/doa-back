@@ -1,10 +1,10 @@
 package project.common.mappers;
 
-import project.dtos.agent.AgentMinDTO;
-import project.dtos.auth.AuthExtDTO;
-import project.entities.CharityAgent;
-import project.entities.User;
-import project.entities.enums.UserTypeEnum;
+import project.v1.dtos.agent.AgentMinDTO;
+import project.v1.dtos.auth.AuthExtDTO;
+import project.v1.entities.CharityAgent;
+import project.v1.entities.User;
+import project.v1.entities.enums.UserTypeEnum;
 
 public class AuthMapper {
   public static AuthExtDTO fromUserToDTO(User user, CharityAgent agent) {

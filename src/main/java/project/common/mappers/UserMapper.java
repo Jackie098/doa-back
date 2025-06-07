@@ -1,9 +1,9 @@
 package project.common.mappers;
 
-import project.dtos.user.UserCreateDTO;
-import project.dtos.user.UserMinDTO;
-import project.entities.User;
-import project.entities.enums.UserTypeEnum;
+import project.v1.dtos.user.UserCreateDTO;
+import project.v1.dtos.user.UserMinDTO;
+import project.v1.entities.User;
+import project.v1.entities.enums.UserTypeEnum;
 
 public class UserMapper {
   public static User fromDTO(UserCreateDTO dto) {
