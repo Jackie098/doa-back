@@ -40,11 +40,11 @@ public class CampaignScheduler {
   public void finishCampaign() {
     LOG.infof("Executing finishCampaign JOB... \n");
 
-    Parameters params = Parameters.with("active", CampaignStatusEnum.ACTIVE).and("paused", CampaignStatusEnum.PAUSED)
+    Parameters params = Parameters.with("active", CampaignStatusEnum.ACTIVE)
         .and("now", Instant.now());
 
     List<Campaign> campaigns = campaignRepository
-        .find("(status = :active OR status = :paused) AND dueDate <= :now", params)
+        .find("status = :active AND dueDate <= :now", params)
         .list();
 
     for (Campaign item : campaigns) {
