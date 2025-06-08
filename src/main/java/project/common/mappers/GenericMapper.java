@@ -19,7 +19,7 @@ public class GenericMapper {
 
   @Inject
   @NonNull
-  ModelMapper mapper;
+  private ModelMapper mapper;
 
   public static GenericMapper getInstance() {
     return new GenericMapper(new Beans().modelMapper());

@@ -10,6 +10,7 @@ public class TokenUtils {
     String token = Jwt.issuer("sign-in")
         .upn(user.getEmail())
         .groups(user.getType().toString())
+        .claim("id", user.getId())
         .expiresIn(Duration.ofDays(2))
         .sign();
 

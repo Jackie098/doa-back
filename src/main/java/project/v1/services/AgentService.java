@@ -9,8 +9,12 @@ import jakarta.transaction.Transactional;
 import project.common.exceptions.MessageErrorEnum;
 import project.common.exceptions.customs.BusinessException;
 import project.common.mappers.AgentMapper;
+import project.common.mappers.CampaignMapper;
 import project.v1.dtos.agent.AgentCreateDTO;
 import project.v1.dtos.agent.AgentDTO;
+import project.v1.dtos.campaign.CampaignCreateDTO;
+import project.v1.dtos.campaign.CampaignDTO;
+import project.v1.entities.Campaign;
 import project.v1.entities.CharityAgent;
 import project.v1.entities.User;
 import project.v1.entities.enums.AgentStatusEnum;
@@ -22,6 +26,8 @@ public class AgentService {
   private UserService userService;
   @Inject
   private PersonService personService;
+  @Inject
+  private CampaignService campaignService;
 
   @Inject
   private AgentRepository agentRepository;
@@ -82,7 +88,7 @@ public class AgentService {
 
     agentRepository.persistAndFlush(agent);
 
-    return AgentMapper.fromEntityToCreateResponse(agent);
+    return AgentMapper.fromEntityToAgentDTO(agent);
   }
 
   @Transactional
@@ -95,5 +101,13 @@ public class AgentService {
     }
 
     user.setFirstAccess(false);
+  }
+
+  @Transactional
+  public CampaignDTO createCampaign(CampaignCreateDTO dto) {
+    Campaign campaign = campaignService.create(dto);
+
+    CampaignDTO mapped = CampaignMapper.fromEntityToCampaignDTO(campaign);
+    return mapped;
   }
 }

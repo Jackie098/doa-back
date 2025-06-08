@@ -1,10 +1,13 @@
 package project.v1.entities;
 
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -47,4 +50,7 @@ public class CharityAgent extends BaseEntity {
 
   @Column(unique = true)
   private String pixKey;
+
+  @OneToMany(mappedBy = "agent")
+  private List<Campaign> campaigns;
 }

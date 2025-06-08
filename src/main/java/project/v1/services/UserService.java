@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import project.common.mappers.GenericMapper;
 import project.common.mappers.UserMapper;
 import project.common.utils.PasswordUtils;
 import project.v1.dtos.user.UserCreateDTO;
@@ -15,9 +14,6 @@ import project.v1.repositories.UserRepository;
 public class UserService {
   @Inject
   private UserRepository userRepository;
-
-  @Inject
-  GenericMapper mapper;
 
   public Optional<User> findByEmailOrPhoneNumber(String email, String phoneNumber) {
     return userRepository.findByEmailOrPhoneNumber(email, phoneNumber);

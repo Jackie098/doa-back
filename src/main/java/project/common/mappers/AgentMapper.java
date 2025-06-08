@@ -21,7 +21,7 @@ public class AgentMapper {
         .build();
   }
 
-  public static AgentDTO fromEntityToCreateResponse(CharityAgent data) {
+  public static AgentDTO fromEntityToAgentDTO(CharityAgent data) {
     var userResponseDto = UserMapper.fromEntityToMinimal(data.getUser());
     var personResponseDto = PersonMapper.fromEntityToMinimal(data.getLegalResponsible());
 
