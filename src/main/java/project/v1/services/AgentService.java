@@ -14,6 +14,7 @@ import project.v1.dtos.agent.AgentCreateDTO;
 import project.v1.dtos.agent.AgentDTO;
 import project.v1.dtos.campaign.CampaignCreateDTO;
 import project.v1.dtos.campaign.CampaignDTO;
+import project.v1.dtos.campaign.CampaignUpdateDTO;
 import project.v1.entities.Campaign;
 import project.v1.entities.CharityAgent;
 import project.v1.entities.User;
@@ -106,6 +107,14 @@ public class AgentService {
   @Transactional
   public CampaignDTO createCampaign(CampaignCreateDTO dto) {
     Campaign campaign = campaignService.create(dto);
+
+    CampaignDTO mapped = CampaignMapper.fromEntityToCampaignDTO(campaign);
+    return mapped;
+  }
+
+  @Transactional
+  public CampaignDTO updateCampaign(CampaignUpdateDTO dto) {
+    Campaign campaign = campaignService.update(dto);
 
     CampaignDTO mapped = CampaignMapper.fromEntityToCampaignDTO(campaign);
     return mapped;

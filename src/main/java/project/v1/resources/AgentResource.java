@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -20,6 +21,7 @@ import jakarta.ws.rs.core.SecurityContext;
 import project.common.requests.ResponseModel;
 import project.v1.dtos.agent.AgentCreateDTO;
 import project.v1.dtos.campaign.CampaignCreateDTO;
+import project.v1.dtos.campaign.CampaignUpdateDTO;
 import project.v1.services.AgentService;
 
 @Path("/v1/agent")
@@ -60,6 +62,20 @@ public class AgentResource {
 
     var result = service.createCampaign(dto);
     var response = ResponseModel.success(Response.Status.OK.getStatusCode(), result);
+
+    return Response.ok(response).build();
+  }
+
+  @PUT
+  @Path("/campaign/{id}")
+  public Response updateCampaign(@Context SecurityContext ctx, @PathParam("id") Long id, @Valid CampaignUpdateDTO dto) {
+    Long agentId = Long.parseLong(jwt.getClaim("id").toString());
+
+    dto.setId(id);
+    dto.setAgentId(agentId);
+    var result = service.updateCampaign(dto);
+    var response = ResponseModel.success(Response.Status.OK.getStatusCode(),
+        result);
 
     return Response.ok(response).build();
   }

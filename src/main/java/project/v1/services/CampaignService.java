@@ -1,6 +1,7 @@
 package project.v1.services;
 
 import java.time.Instant;
+import java.util.Optional;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -8,6 +9,7 @@ import project.common.exceptions.MessageErrorEnum;
 import project.common.exceptions.customs.BusinessException;
 import project.common.mappers.CampaignMapper;
 import project.v1.dtos.campaign.CampaignCreateDTO;
+import project.v1.dtos.campaign.CampaignUpdateDTO;
 import project.v1.entities.Campaign;
 import project.v1.entities.CharityAgent;
 import project.v1.entities.enums.CampaignStatusEnum;
@@ -58,6 +60,69 @@ public class CampaignService {
 
     campaignRepository.persistAndFlush(campaign);
     System.out.println("created at-> " + campaign.getCreatedAt());
+
+    return campaign;
+  }
+
+  public Campaign update(CampaignUpdateDTO dto) {
+    if (dto == null || isEmptyUpdateDTO(dto)) {
+      throw new BusinessException("Não é possível atualizar uma campanha com nenhum valor novo.", 400);
+    }
+
+    Campaign campaign = campaignRepository.find("id = ?1 AND agent.user.id = ?2", dto.getId(), dto.getAgentId())
+        .firstResult();
+
+    if (campaign == null) {
+      throw new BusinessException(MessageErrorEnum.CAMPAIGN_NOT_FOUND.getMessage(), 404);
+    }
+
+    // Alterar ticketPrice somente SE status = AWAITING
+    if (dto.getTicketPrice() != null && campaign.getStatus() != CampaignStatusEnum.AWAITING) {
+      throw new BusinessException("Somente é possível alterar o valor do ticket antes da campanha começar.", 400);
+    }
+
+    if (campaign.getStatus() == CampaignStatusEnum.CANCELED
+        || campaign.getStatus() == CampaignStatusEnum.FINISHED) {
+
+      Integer newTotal = dto.getTotalTickets() != null ? dto.getTotalTickets() : 0;
+      Integer currentTotal = campaign.getTotalTickets() != null ? campaign.getTotalTickets() : 0;
+      // TODO: Alterar totalTickets pra menos somente se ainda há tickets disponíveis
+      if (dto.getTotalTickets() != null && newTotal < currentTotal) {
+        throw new BusinessException("Diminuir a quantidade total de tickets duma campanha ainda não é possível", 400);
+      }
+
+      // Alterar totalTickets para mais SE campanha NÂO cancelada OU finalizada
+      if (newTotal > currentTotal) {
+        throw new BusinessException(
+            "Não é possível alterar o total de tickets pois a campanha está cancelada ou finalizada.", 400);
+      }
+    }
+
+    // Alterar startDate SE (status == AWAITING) E startDate < dueDate
+    if (dto.getStartDate() != null) {
+      if (campaign.getStatus() != CampaignStatusEnum.AWAITING) {
+        throw new BusinessException("Só é possível alterar a data de início se a campanha estiver agendada (AWAITING).",
+            400);
+      }
+
+      if (campaign.getDueDate() != null && dto.getStartDate().isAfter(campaign.getDueDate())) {
+        throw new BusinessException("A data de início não pode ser posterior à data de término.", 400);
+      }
+    }
+
+    // Alterar dueDate SE status != CANCELED
+    if (dto.getDueDate() != null) {
+      if (campaign.getStatus() == CampaignStatusEnum.CANCELED) {
+        throw new BusinessException("Não é possível alterar a data de término de uma campanha cancelada.", 400);
+      }
+
+      if (campaign.getStartDate().isAfter(dto.getDueDate())) {
+        throw new BusinessException("A data de finalização não deve ser anterior a data de início.", 400);
+      }
+    }
+
+    // Atualizar campos aqui
+    updateFromDTO(campaign, dto);
 
     return campaign;
   }
@@ -146,4 +211,29 @@ public class CampaignService {
     campaign.setStatus(CampaignStatusEnum.FINISHED);
   }
 
+  public static void updateFromDTO(Campaign campaign, CampaignUpdateDTO dto) {
+    Optional.ofNullable(dto.getName()).ifPresent(campaign::setName);
+    Optional.ofNullable(dto.getPhoneNumber()).ifPresent(campaign::setPhoneNumber);
+    Optional.ofNullable(dto.getDescription()).ifPresent(campaign::setDescription);
+    Optional.ofNullable(dto.getAddresLineOne()).ifPresent(campaign::setAddresLineOne);
+    Optional.ofNullable(dto.getAddresLineTwo()).ifPresent(campaign::setAddresLineTwo);
+    Optional.ofNullable(dto.getAddresLineThree()).ifPresent(campaign::setAddresLineThree);
+    Optional.ofNullable(dto.getTotalTickets()).ifPresent(campaign::setTotalTickets);
+    Optional.ofNullable(dto.getTicketPrice()).ifPresent(campaign::setTicketPrice);
+    Optional.ofNullable(dto.getStartDate()).ifPresent(campaign::setStartDate);
+    Optional.ofNullable(dto.getDueDate()).ifPresent(campaign::setDueDate);
+  }
+
+  private boolean isEmptyUpdateDTO(CampaignUpdateDTO dto) {
+    return dto.getName() == null &&
+        dto.getPhoneNumber() == null &&
+        dto.getDescription() == null &&
+        dto.getAddresLineOne() == null &&
+        dto.getAddresLineTwo() == null &&
+        dto.getAddresLineThree() == null &&
+        dto.getTotalTickets() == null &&
+        dto.getTicketPrice() == null &&
+        dto.getStartDate() == null &&
+        dto.getDueDate() == null;
+  }
 }
