@@ -110,4 +110,9 @@ public class AgentService {
     CampaignDTO mapped = CampaignMapper.fromEntityToCampaignDTO(campaign);
     return mapped;
   }
+
+  @Transactional
+  public void finishCampaign(Long id) {
+    campaignService.finish(id);
+  }
 }

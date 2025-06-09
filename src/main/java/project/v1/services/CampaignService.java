@@ -2,6 +2,7 @@ package project.v1.services;
 
 import java.time.Instant;
 
+import io.vertx.mutiny.core.eventbus.Message;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import project.common.exceptions.MessageErrorEnum;
@@ -60,6 +61,25 @@ public class CampaignService {
     System.out.println("created at-> " + campaign.getCreatedAt());
 
     return campaign;
+  }
+
+  public void finish(Long id) {
+    Campaign campaign = campaignRepository.findById(id);
+
+    if (campaign.getStatus() != CampaignStatusEnum.ACTIVE) {
+      throw new BusinessException(MessageErrorEnum.FINISH_ONLY_ACITVE_CAMPAIN.getMessage(), 400);
+    }
+
+    if (campaign.getDueDate().isBefore(Instant.now())) {
+      throw new BusinessException(MessageErrorEnum.DUE_DATE_ACTIVE_CAMPAIGN.getMessage(), 400);
+    }
+
+    if (campaign.getFinishedDate() != null) {
+      throw new BusinessException(MessageErrorEnum.CAMPAIGN_ALREADY_FINISHED.getMessage(), 400);
+    }
+
+    campaign.setFinishedDate(Instant.now());
+    campaign.setStatus(CampaignStatusEnum.FINISHED);
   }
 
 }

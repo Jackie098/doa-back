@@ -11,6 +11,7 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
@@ -61,5 +62,13 @@ public class AgentResource {
     var response = ResponseModel.success(Response.Status.OK.getStatusCode(), result);
 
     return Response.ok(response).build();
+  }
+
+  @PATCH
+  @Path("/campaign/{id}/finish")
+  public Response finishCampaign(@Context SecurityContext ctx, @PathParam("id") Long id) {
+    service.finishCampaign(id);
+
+    return Response.ok().build();
   }
 }
