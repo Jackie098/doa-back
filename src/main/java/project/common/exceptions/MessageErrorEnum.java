@@ -17,7 +17,10 @@ public enum MessageErrorEnum {
   SLUG_ALREADY_EXISTS("O código utilizado já está vinculado a outra campanha."),
   FINISH_ONLY_ACITVE_CAMPAIN("É possível finalizar somente uma campanha ativa."),
   DUE_DATE_ACTIVE_CAMPAIGN("O prazo de encerramento desta campanha venceu."),
-  CAMPAIGN_ALREADY_FINISHED("Campanha já finalizada!");
+  CAMPAIGN_ALREADY_FINISHED("Campanha já finalizada!"),
+  PAUSE_ONLY_ACITVE_OR_AWAIT_CAMPAIN("É possível pausar somente uma campanha agendada ou ativa"),
+  CAMPAIGN_NOT_FOUND("Campanha não encontrada!"),
+  CAMPAIGN_ALREADY_CANCELED("Esta campanha já está cancelada.");
 
   public String message;
 

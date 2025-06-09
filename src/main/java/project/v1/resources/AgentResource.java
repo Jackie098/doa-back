@@ -65,10 +65,35 @@ public class AgentResource {
   }
 
   @PATCH
+  @Path("/campaign/{id}/pause")
+  public Response pauseCampaign(@Context SecurityContext ctx, @PathParam("id") Long id) {
+    Long agentId = Long.parseLong(jwt.getClaim("id").toString());
+    service.pauseCampaign(id, agentId);
+
+    var response = ResponseModel.success(Response.Status.OK.getStatusCode(), "Campanha pausada com sucesso!");
+
+    return Response.ok(response).build();
+  }
+
+  @PATCH
+  @Path("/campaign/{id}/cancel")
+  public Response cancelCampaign(@Context SecurityContext ctx, @PathParam("id") Long id) {
+    Long agentId = Long.parseLong(jwt.getClaim("id").toString());
+    service.cancelCampaign(id, agentId);
+
+    var response = ResponseModel.success(Response.Status.OK.getStatusCode(), "Campanha cancelada com sucesso!");
+
+    return Response.ok(response).build();
+  }
+
+  @PATCH
   @Path("/campaign/{id}/finish")
   public Response finishCampaign(@Context SecurityContext ctx, @PathParam("id") Long id) {
-    service.finishCampaign(id);
+    Long agentId = Long.parseLong(jwt.getClaim("id").toString());
+    service.finishCampaign(id, agentId);
 
-    return Response.ok().build();
+    var response = ResponseModel.success(Response.Status.OK.getStatusCode(), "Campanha finalizada com sucesso");
+
+    return Response.ok(response).build();
   }
 }

@@ -112,7 +112,17 @@ public class AgentService {
   }
 
   @Transactional
-  public void finishCampaign(Long id) {
-    campaignService.finish(id);
+  public void pauseCampaign(Long id, Long agentId) {
+    campaignService.pause(id, agentId);
+  }
+
+  @Transactional
+  public void cancelCampaign(Long id, Long agentId) {
+    campaignService.cancel(id, agentId);
+  }
+
+  @Transactional
+  public void finishCampaign(Long id, Long agentId) {
+    campaignService.finish(id, agentId);
   }
 }

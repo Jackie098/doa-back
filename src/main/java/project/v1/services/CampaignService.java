@@ -2,7 +2,6 @@ package project.v1.services;
 
 import java.time.Instant;
 
-import io.vertx.mutiny.core.eventbus.Message;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import project.common.exceptions.MessageErrorEnum;
@@ -63,8 +62,48 @@ public class CampaignService {
     return campaign;
   }
 
-  public void finish(Long id) {
-    Campaign campaign = campaignRepository.findById(id);
+  public void pause(Long id, Long agentId) {
+    Campaign campaign = campaignRepository.find("id = ?1 AND agent.user.id = ?2", id, agentId).firstResult();
+
+    if (campaign == null) {
+      throw new BusinessException(MessageErrorEnum.CAMPAIGN_NOT_FOUND.getMessage(), 404);
+    }
+
+    if (!(campaign.getStatus() == CampaignStatusEnum.ACTIVE || campaign.getStatus() == CampaignStatusEnum.AWAITING)) {
+      throw new BusinessException(MessageErrorEnum.PAUSE_ONLY_ACITVE_OR_AWAIT_CAMPAIN.getMessage(), 400);
+    }
+
+    if (campaign.getFinishedDate() != null) {
+      throw new BusinessException(MessageErrorEnum.CAMPAIGN_ALREADY_FINISHED.getMessage(), 400);
+    }
+
+    campaign.setStatus(CampaignStatusEnum.PAUSED);
+  }
+
+  public void cancel(Long id, Long agentId) {
+    Campaign campaign = campaignRepository.find("id = ?1 AND agent.user.id = ?2", id, agentId).firstResult();
+
+    if (campaign == null) {
+      throw new BusinessException(MessageErrorEnum.CAMPAIGN_NOT_FOUND.getMessage(), 404);
+    }
+
+    if (campaign.getStatus() == CampaignStatusEnum.CANCELED) {
+      throw new BusinessException(MessageErrorEnum.CAMPAIGN_ALREADY_CANCELED.getMessage(), 400);
+    }
+
+    if (campaign.getStatus() == CampaignStatusEnum.FINISHED) {
+      throw new BusinessException(MessageErrorEnum.CAMPAIGN_ALREADY_FINISHED.getMessage(), 400);
+    }
+
+    campaign.setStatus(CampaignStatusEnum.CANCELED);
+  }
+
+  public void finish(Long id, Long agentId) {
+    Campaign campaign = campaignRepository.find("id = ?1 AND agent.user.id = ?2", id, agentId).firstResult();
+
+    if (campaign == null) {
+      throw new BusinessException(MessageErrorEnum.CAMPAIGN_NOT_FOUND.getMessage(), 404);
+    }
 
     if (campaign.getStatus() != CampaignStatusEnum.ACTIVE) {
       throw new BusinessException(MessageErrorEnum.FINISH_ONLY_ACITVE_CAMPAIN.getMessage(), 400);
