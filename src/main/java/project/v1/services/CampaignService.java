@@ -62,6 +62,31 @@ public class CampaignService {
     return campaign;
   }
 
+  public void reactivate(Long id, Long agentId) {
+    Campaign campaign = campaignRepository.find("id = ?1 AND agent.user.id = ?2", id, agentId).firstResult();
+
+    if (campaign == null) {
+      throw new BusinessException(MessageErrorEnum.CAMPAIGN_NOT_FOUND.getMessage(), 404);
+    }
+
+    if (campaign.getStatus() == CampaignStatusEnum.ACTIVE) {
+      throw new BusinessException(MessageErrorEnum.CAMPAIGN_ALREADY_ACTIVE.getMessage(), 400);
+    }
+
+    if (campaign.getStatus() == CampaignStatusEnum.CANCELED) {
+      throw new BusinessException(MessageErrorEnum.ACTIVATE_CANCELED_CAMPAIGN.getMessage(), 400);
+    }
+
+    if (campaign.getFinishedDate() != null || campaign.getStatus() == CampaignStatusEnum.FINISHED) {
+      if (campaign.getDueDate().isBefore(Instant.now())) {
+        throw new BusinessException(MessageErrorEnum.UPDATE_DUE_DATE.getMessage(),
+            404);
+      }
+    }
+
+    campaign.setStatus(CampaignStatusEnum.ACTIVE);
+  }
+
   public void pause(Long id, Long agentId) {
     Campaign campaign = campaignRepository.find("id = ?1 AND agent.user.id = ?2", id, agentId).firstResult();
 

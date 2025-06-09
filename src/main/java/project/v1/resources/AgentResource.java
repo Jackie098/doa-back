@@ -65,6 +65,17 @@ public class AgentResource {
   }
 
   @PATCH
+  @Path("/campaign/{id}/reactivate")
+  public Response reactivateCampaign(@Context SecurityContext ctx, @PathParam("id") Long id) {
+    Long agentId = Long.parseLong(jwt.getClaim("id").toString());
+    service.reactivateCampaign(id, agentId);
+
+    var response = ResponseModel.success(Response.Status.OK.getStatusCode(), "Campanha reativada com sucesso!");
+
+    return Response.ok(response).build();
+  }
+
+  @PATCH
   @Path("/campaign/{id}/pause")
   public Response pauseCampaign(@Context SecurityContext ctx, @PathParam("id") Long id) {
     Long agentId = Long.parseLong(jwt.getClaim("id").toString());

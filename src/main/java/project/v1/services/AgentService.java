@@ -112,6 +112,11 @@ public class AgentService {
   }
 
   @Transactional
+  public void reactivateCampaign(Long id, Long agentId) {
+    campaignService.reactivate(id, agentId);
+  }
+
+  @Transactional
   public void pauseCampaign(Long id, Long agentId) {
     campaignService.pause(id, agentId);
   }

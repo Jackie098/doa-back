@@ -20,7 +20,10 @@ public enum MessageErrorEnum {
   CAMPAIGN_ALREADY_FINISHED("Campanha já finalizada!"),
   PAUSE_ONLY_ACITVE_OR_AWAIT_CAMPAIN("É possível pausar somente uma campanha agendada ou ativa"),
   CAMPAIGN_NOT_FOUND("Campanha não encontrada!"),
-  CAMPAIGN_ALREADY_CANCELED("Esta campanha já está cancelada.");
+  CAMPAIGN_ALREADY_CANCELED("Esta campanha já está cancelada."),
+  CAMPAIGN_ALREADY_ACTIVE("Campanha já está ativa!"),
+  ACTIVATE_CANCELED_CAMPAIGN("Campanhas canceladas não podem ser reativadas."),
+  UPDATE_DUE_DATE("Você precisa atualizar a data de vencimento da campanha para poder reativá-la.");
 
   public String message;
 
