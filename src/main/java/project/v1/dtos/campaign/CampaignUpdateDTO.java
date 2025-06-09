@@ -23,7 +23,7 @@ public class CampaignUpdateDTO {
   private String name;
 
   @UnmaskNumber
-  @Length(min = 11, max = 14)
+  @Length(min = 11, max = 14, message = "O telefone deve conter entre 11 e 14 caracteres.")
   private String phoneNumber;
 
   private String description;

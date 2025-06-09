@@ -8,20 +8,24 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
+import jakarta.ws.rs.core.Response.Status;
 import project.common.requests.ResponseModel;
 import project.v1.dtos.agent.AgentCreateDTO;
 import project.v1.dtos.campaign.CampaignCreateDTO;
 import project.v1.dtos.campaign.CampaignUpdateDTO;
+import project.v1.entities.enums.CampaignStatusEnum;
 import project.v1.services.AgentService;
 
 @Path("/v1/agent")
@@ -52,6 +56,17 @@ public class AgentResource {
     service.disableFirstAccess(ctx.getUserPrincipal().getName());
 
     return Response.accepted().build();
+  }
+
+  @GET
+  @Path("/campaign")
+  public Response listCampaign(@Context SecurityContext ctx, @QueryParam("status") CampaignStatusEnum status) {
+    Long agentId = Long.parseLong(jwt.getClaim("id").toString());
+
+    var result = service.listCampaign(status, agentId);
+    var response = ResponseModel.success(Status.OK.getStatusCode(), result);
+
+    return Response.ok(response).build();
   }
 
   @POST

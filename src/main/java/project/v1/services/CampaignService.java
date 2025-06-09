@@ -1,6 +1,7 @@
 package project.v1.services;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -22,6 +23,18 @@ public class CampaignService {
 
   @Inject
   private AgentService agentService;
+
+  public List<Campaign> list(CampaignStatusEnum status, Long userId) {
+    List<Campaign> result = null;
+
+    if (status == null) {
+      result = campaignRepository.list("agent.user.id = ?1", userId);
+    } else {
+      result = campaignRepository.list("agent.user.id = ?1 AND status = ?2", userId, status);
+    }
+
+    return result;
+  }
 
   public Boolean verifySlug(CampaignCreateDTO dto) {
     return campaignRepository.find("slug = ?1 AND agent.id = ?2", dto.getSlug(), dto.getAgentId())

@@ -1,5 +1,7 @@
 package project.common.mappers;
 
+import java.util.List;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import project.v1.dtos.campaign.CampaignCreateDTO;
 import project.v1.dtos.campaign.CampaignDTO;
@@ -45,6 +47,11 @@ public class CampaignMapper {
         .dueDate(data.getDueDate())
         .createdDate(data.getCreatedAt())
         .build();
+  }
 
+  public static List<CampaignDTO> fromEntityToListCampaignDTO(List<Campaign> campaigns) {
+    return campaigns.stream()
+        .map(campaign -> fromEntityToCampaignDTO(campaign))
+        .toList();
   }
 }

@@ -19,6 +19,7 @@ import project.v1.entities.Campaign;
 import project.v1.entities.CharityAgent;
 import project.v1.entities.User;
 import project.v1.entities.enums.AgentStatusEnum;
+import project.v1.entities.enums.CampaignStatusEnum;
 import project.v1.repositories.AgentRepository;
 
 @ApplicationScoped
@@ -102,6 +103,13 @@ public class AgentService {
     }
 
     user.setFirstAccess(false);
+  }
+
+  public List<CampaignDTO> listCampaign(CampaignStatusEnum status, Long userId) {
+    var result = campaignService.list(status, userId);
+    var mapped = CampaignMapper.fromEntityToListCampaignDTO(result);
+
+    return mapped;
   }
 
   @Transactional
