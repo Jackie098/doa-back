@@ -2,6 +2,7 @@ package project.v1.entities;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,6 +10,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -60,4 +62,7 @@ public class Campaign extends BaseEntity {
   @Column(nullable = false)
   private Instant dueDate;
   private Instant finishedDate;
+
+  @OneToMany(mappedBy = "campaign")
+  private List<CampaignVolunteer> volunteers;
 }

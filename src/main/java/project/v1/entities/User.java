@@ -1,9 +1,12 @@
 package project.v1.entities;
 
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -50,4 +53,7 @@ public class User extends BaseEntity {
   @Column(columnDefinition = "boolean default false")
   @Builder.Default
   private Boolean isCharityAgentMember = false;
+
+  @OneToMany(mappedBy = "user")
+  private List<CampaignVolunteer> volunteering;
 }
