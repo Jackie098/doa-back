@@ -36,8 +36,8 @@ public class CampaignService {
     return result;
   }
 
-  public Campaign findById(Long campaignId) {
-    return campaignRepository.findById(campaignId);
+  public Optional<Campaign> findById(Long campaignId) {
+    return campaignRepository.findByIdOptional(campaignId);
   }
 
   public Boolean verifySlug(CampaignCreateDTO dto) {
@@ -63,7 +63,7 @@ public class CampaignService {
     }
 
     if (verifySlug(dto)) {
-      throw new BusinessException(MessageErrorEnum.SLUG_ALREADY_EXISTS.getMessage(), 400);
+      throw new BusinessException(MessageErrorEnum.CAMPAIGN_SLUG_ALREADY_EXISTS.getMessage(), 400);
     }
 
     if (Boolean.TRUE.equals(dto.getStartNow())) {
@@ -161,7 +161,7 @@ public class CampaignService {
 
     if (campaign.getFinishedDate() != null || campaign.getStatus() == CampaignStatusEnum.FINISHED) {
       if (campaign.getDueDate().isBefore(Instant.now())) {
-        throw new BusinessException(MessageErrorEnum.UPDATE_DUE_DATE.getMessage(),
+        throw new BusinessException(MessageErrorEnum.UPDATE_DUE_DATE_CAMPAIGN.getMessage(),
             404);
       }
     }

@@ -15,6 +15,10 @@ public class UserService {
   @Inject
   private UserRepository userRepository;
 
+  public Optional<User> findById(Long userId) {
+    return userRepository.findByIdOptional(userId);
+  }
+
   public Optional<User> findByEmailOrPhoneNumber(String email, String phoneNumber) {
     return userRepository.findByEmailOrPhoneNumber(email, phoneNumber);
   }

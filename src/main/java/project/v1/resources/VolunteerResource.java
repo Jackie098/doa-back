@@ -10,9 +10,12 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.SecurityContext;
 import project.v1.dtos.volunteer.VolunteerCreateDTO;
 import project.v1.services.VolunteerService;
 
@@ -34,9 +37,12 @@ public class VolunteerResource {
     return Response.accepted().build();
   }
 
-  @PATCH()
+  @PATCH
   @Path("/campaign/{id}/bind")
-  public Response bindCampaign() {
-    return Response.ok().build();
+  public Response bindCampaign(@Context SecurityContext ctx, @PathParam("id") Long campaignId) {
+    Long userId = Long.parseLong(jwt.getClaim("id").toString());
+
+    service.bindVolunteerCampaign(userId, campaignId);
+    return Response.accepted().build();
   }
 }
