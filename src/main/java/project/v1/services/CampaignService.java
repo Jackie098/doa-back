@@ -36,6 +36,10 @@ public class CampaignService {
     return result;
   }
 
+  public Campaign findById(Long campaignId) {
+    return campaignRepository.findById(campaignId);
+  }
+
   public Boolean verifySlug(CampaignCreateDTO dto) {
     return campaignRepository.find("slug = ?1 AND agent.id = ?2", dto.getSlug(), dto.getAgentId())
         .firstResult() != null;

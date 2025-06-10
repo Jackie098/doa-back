@@ -2,6 +2,7 @@ package project.common.mappers;
 
 import project.v1.dtos.user.UserCreateDTO;
 import project.v1.dtos.user.UserMinDTO;
+import project.v1.dtos.volunteer.VolunteerCreateDTO;
 import project.v1.entities.User;
 import project.v1.entities.enums.UserTypeEnum;
 
@@ -24,6 +25,17 @@ public class UserMapper {
         .name(user.getName())
         .type(user.getType())
         .createdAt(user.getCreatedAt())
+        .build();
+  }
+
+  public static UserCreateDTO fromVolunteerCreateToUserCreateDTO(VolunteerCreateDTO dto) {
+    return UserCreateDTO.builder()
+        .email(dto.getEmail())
+        .password(dto.getPassword())
+        .avatarUrl(dto.getAvatarUrl())
+        .type(dto.getType().toUpperCase())
+        .phoneNumber(dto.getPhoneNumber())
+        .name(dto.getName())
         .build();
   }
 }

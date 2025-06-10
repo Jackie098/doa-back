@@ -5,6 +5,7 @@ import org.hibernate.validator.constraints.Length;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import project.common.annotations.UnmaskNumber;
@@ -14,6 +15,7 @@ import project.v1.entities.enums.UserTypeEnum;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class UserCreateDTO {
   @NotBlank
   @Email
