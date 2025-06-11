@@ -26,12 +26,17 @@ public class CampaignScheduler {
   @Scheduled(every = "1m")
   public void activateScheduledCampaings() {
     LOG.infof("Executing Campaign Scheduler JOB... \n");
-    List<Campaign> campaigns = campaignRepository
-        .find("status = ?1 AND startDate <= ?2", CampaignStatusEnum.SCHEDULED, Instant.now()).list();
 
-    for (Campaign item : campaigns) {
-      item.setStatus(CampaignStatusEnum.ACTIVE);
-      LOG.infof("Campaign active: %s \n Slug: %s \n Agent:", item.getName(), item.getSlug(), item.getAgent().getId());
+    try {
+      List<Campaign> campaigns = campaignRepository
+          .find("status = ?1 AND startDate <= ?2", CampaignStatusEnum.SCHEDULED, Instant.now()).list();
+
+      for (Campaign item : campaigns) {
+        item.setStatus(CampaignStatusEnum.ACTIVE);
+        LOG.infof("Campaign active: %s \n Slug: %s \n Agent:", item.getName(), item.getSlug(), item.getAgent().getId());
+      }
+    } catch (Exception e) {
+      Log.error(e);
     }
   }
 
@@ -40,18 +45,22 @@ public class CampaignScheduler {
   public void finishCampaign() {
     LOG.infof("Executing finishCampaign JOB... \n");
 
-    Parameters params = Parameters.with("active", CampaignStatusEnum.ACTIVE)
-        .and("now", Instant.now());
+    try {
+      Parameters params = Parameters.with("active", CampaignStatusEnum.ACTIVE)
+          .and("now", Instant.now());
 
-    List<Campaign> campaigns = campaignRepository
-        .find("status = :active AND dueDate <= :now", params)
-        .list();
+      List<Campaign> campaigns = campaignRepository
+          .find("status = :active AND dueDate <= :now", params)
+          .list();
 
-    for (Campaign item : campaigns) {
-      item.setStatus(CampaignStatusEnum.FINISHED);
-      item.setFinishedDate(Instant.now());
-      Log.infof("Finalizado a campanha: %s com data de vencimento em %s < que %s", item.getName(), item.getDueDate(),
-          Instant.now());
+      for (Campaign item : campaigns) {
+        item.setStatus(CampaignStatusEnum.FINISHED);
+        item.setFinishedDate(Instant.now());
+        Log.infof("Finalizado a campanha: %s com data de vencimento em %s < que %s", item.getName(), item.getDueDate(),
+            Instant.now());
+      }
+    } catch (Exception e) {
+      Log.error(e);
     }
   }
 }
