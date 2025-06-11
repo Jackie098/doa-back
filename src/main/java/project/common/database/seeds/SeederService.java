@@ -6,11 +6,13 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ThreadLocalRandom;
 
 import io.quarkus.runtime.Startup;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import project.v1.entities.Campaign;
+import project.v1.entities.CampaignVolunteer;
 import project.v1.entities.CharityAgent;
 import project.v1.entities.Person;
 import project.v1.entities.User;
@@ -22,6 +24,9 @@ import project.v1.entities.enums.UserTypeEnum;
 @Startup
 @ApplicationScoped
 public class SeederService {
+  private final Integer QUANTITY_AGENTS = 30;
+  private final Integer QUANTITY_CAMPAIGNS_BY_ACTIVE_AGENT = 10;
+  private final Integer QUANTITY_VOLUNTEERS = 50;
 
   @Transactional
   public void seed() {
@@ -33,8 +38,9 @@ public class SeederService {
     List<Person> people = new ArrayList<>();
     List<CharityAgent> agents = new ArrayList<>();
     List<Campaign> campaigns = new ArrayList<>();
+    List<CampaignVolunteer> campaignVolunteers = new ArrayList<>();
 
-    for (int i = 1; i <= 5; i++) {
+    for (int i = 1; i <= QUANTITY_AGENTS; i++) {
       User user = new User();
       user.setName("Agente " + i);
       user.setEmail("agente" + i + "@email.com");
@@ -66,21 +72,21 @@ public class SeederService {
       agents.add(agent);
 
       if (agent.getStatus() == AgentStatusEnum.ACTIVE) {
-        for (int j = 1; j <= 5; j++) {
+        for (int j = 1; j <= QUANTITY_CAMPAIGNS_BY_ACTIVE_AGENT; j++) {
           CampaignStatusEnum status;
           Instant startDate;
           Instant dueDate;
           Instant finishedDate = null;
 
-          if (j == 1) {
+          if (j <= 3) {
             status = CampaignStatusEnum.SCHEDULED;
             startDate = Instant.now().plus(7, ChronoUnit.DAYS);
             dueDate = startDate.plus(15, ChronoUnit.DAYS);
-          } else if (j == 2 || j == 3) {
+          } else if (j <= 6) {
             status = CampaignStatusEnum.ACTIVE;
             startDate = Instant.now();
             dueDate = startDate.plus(15, ChronoUnit.DAYS);
-          } else if (j == 4) {
+          } else if (j <= 7) {
             status = CampaignStatusEnum.CANCELED;
             startDate = Instant.now().minus(20, ChronoUnit.DAYS);
             dueDate = startDate.plus(10, ChronoUnit.DAYS);
@@ -104,8 +110,8 @@ public class SeederService {
           campaign.setAddresLineOne("Rua Exemplo, 123");
           campaign.setAddresLineTwo("Cidade, Estado");
           campaign.setAddresLineThree("Complemento");
-          campaign.setTotalTickets(100);
-          campaign.setTicketPrice(BigDecimal.TEN);
+          campaign.setTotalTickets(100 * j);
+          campaign.setTicketPrice(BigDecimal.TEN.multiply(BigDecimal.valueOf(j)));
           campaign.setStatus(status);
           campaign.setEventType(CampaignTypeEnum.PICK_UP);
           campaign.setStartDate(startDate);
@@ -118,10 +124,33 @@ public class SeederService {
       }
     }
 
+    for (int i = 1; i <= QUANTITY_VOLUNTEERS; i++) {
+      User user = new User();
+      user.setName("Voluntário " + i);
+      user.setEmail("vol" + i + "@email.com");
+      user.setPassword("$2a$12$AUBavi4Bm4tmciYwUKvK3O.RRvOx3LlSAe.fT8p3OE/ZLa8yEYU/q");
+      user.setPhoneNumber("8699111111" + i);
+      user.setType(UserTypeEnum.VOLUNTEER);
+      user.setIsActive(i % 2 == 0);
+      user.setCreatedAt(Instant.now());
+      user.setUpdatedAt(Instant.now());
+      users.add(user);
+
+      int randomIndex = ThreadLocalRandom.current().nextInt(0, campaigns.size());
+      Campaign campaign = campaigns.get(randomIndex);
+
+      CampaignVolunteer campaignVolunteer = new CampaignVolunteer();
+      campaignVolunteer.setUser(user);
+      campaignVolunteer.setCampaign(campaign);
+      campaignVolunteer.setIsAccepted((randomIndex + 1) % 2 == 0);
+      campaignVolunteers.add(campaignVolunteer);
+    }
+
     User.persist(users);
     Person.persist(people);
     CharityAgent.persist(agents);
     Campaign.persist(campaigns);
+    CampaignVolunteer.persist(campaignVolunteers);
 
     saveAdmin();
   }
