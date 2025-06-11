@@ -27,7 +27,7 @@ public class CampaignScheduler {
   public void activateScheduledCampaings() {
     LOG.infof("Executing Campaign Scheduler JOB... \n");
     List<Campaign> campaigns = campaignRepository
-        .find("status = ?1 AND startDate <= ?2", CampaignStatusEnum.AWAITING, Instant.now()).list();
+        .find("status = ?1 AND startDate <= ?2", CampaignStatusEnum.SCHEDULED, Instant.now()).list();
 
     for (Campaign item : campaigns) {
       item.setStatus(CampaignStatusEnum.ACTIVE);

@@ -73,7 +73,7 @@ public class SeederService {
           Instant finishedDate = null;
 
           if (j == 1) {
-            status = CampaignStatusEnum.AWAITING;
+            status = CampaignStatusEnum.SCHEDULED;
             startDate = Instant.now().plus(7, ChronoUnit.DAYS);
             dueDate = startDate.plus(15, ChronoUnit.DAYS);
           } else if (j == 2 || j == 3) {

@@ -25,7 +25,7 @@ public class VolunteerService {
     Campaign campaign = campaignService.findById(dto.getVolunteer().getCampaignId())
         .orElseThrow(() -> new BusinessException(MessageErrorEnum.CAMPAIGN_NOT_FOUND.getMessage(), 404));
 
-    if (!(campaign.getStatus() == CampaignStatusEnum.AWAITING || campaign.getStatus() == CampaignStatusEnum.ACTIVE)) {
+    if (!(campaign.getStatus() == CampaignStatusEnum.SCHEDULED || campaign.getStatus() == CampaignStatusEnum.ACTIVE)) {
       throw new BusinessException(MessageErrorEnum.CAMPAIGN_NOT_RECEIVE_NEW_VOLUNTEER.getMessage(), 400);
     }
 
@@ -50,7 +50,7 @@ public class VolunteerService {
     Campaign campaign = campaignService.findById(campaignId)
         .orElseThrow(() -> new BusinessException(MessageErrorEnum.CAMPAIGN_NOT_FOUND.getMessage(), 404));
 
-    if (!(campaign.getStatus() == CampaignStatusEnum.AWAITING || campaign.getStatus() == CampaignStatusEnum.ACTIVE)) {
+    if (!(campaign.getStatus() == CampaignStatusEnum.SCHEDULED || campaign.getStatus() == CampaignStatusEnum.ACTIVE)) {
       throw new BusinessException(MessageErrorEnum.CAMPAIGN_NOT_RECEIVE_NEW_VOLUNTEER.getMessage(), 400);
     }
 

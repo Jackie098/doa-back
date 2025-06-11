@@ -73,7 +73,7 @@ public class CampaignService {
       dto.setStartDate(Instant.now());
       dto.setStatus(CampaignStatusEnum.ACTIVE);
     } else {
-      dto.setStatus(CampaignStatusEnum.AWAITING);
+      dto.setStatus(CampaignStatusEnum.SCHEDULED);
     }
 
     Campaign campaign = CampaignMapper.fromDTO(dto, agent);
@@ -96,8 +96,7 @@ public class CampaignService {
       throw new NotFoundException(MessageErrorEnum.CAMPAIGN_NOT_FOUND.getMessage());
     }
 
-    // Alterar ticketPrice somente SE status = AWAITING
-    if (dto.getTicketPrice() != null && campaign.getStatus() != CampaignStatusEnum.AWAITING) {
+    if (dto.getTicketPrice() != null && campaign.getStatus() != CampaignStatusEnum.SCHEDULED) {
       throw new BusinessException(MessageErrorEnum.CAMPAIGN_UPDATE_TICKET_PRICE_BEFORE_START.getMessage(), 400);
     }
 
@@ -111,16 +110,14 @@ public class CampaignService {
         throw new BusinessException("Diminuir a quantidade total de tickets duma campanha ainda não é possível", 501);
       }
 
-      // Alterar totalTickets para mais SE campanha NÂO cancelada OU finalizada
       if (newTotal > currentTotal) {
         throw new BusinessException(
             MessageErrorEnum.CAMPAIGN_UPDATE_TOTAL_TICKETS_STATUS_INACTIVE.getMessage(), 400);
       }
     }
 
-    // Alterar startDate SE (status == AWAITING) E startDate < dueDate
     if (dto.getStartDate() != null) {
-      if (campaign.getStatus() != CampaignStatusEnum.AWAITING) {
+      if (campaign.getStatus() != CampaignStatusEnum.SCHEDULED) {
         throw new BusinessException(MessageErrorEnum.SCHEDULED_CAMPAIGN_UPDATE_START_DATE.getMessage(),
             400);
       }
@@ -130,7 +127,6 @@ public class CampaignService {
       }
     }
 
-    // Alterar dueDate SE status != CANCELED
     if (dto.getDueDate() != null) {
       if (campaign.getStatus() == CampaignStatusEnum.CANCELED) {
         throw new BusinessException(MessageErrorEnum.CAMPAIGN_DUE_DATE_STATUS_CANCELED.getMessage(), 400);
@@ -141,7 +137,6 @@ public class CampaignService {
       }
     }
 
-    // Atualizar campos aqui
     updateFromDTO(campaign, dto);
 
     return campaign;
@@ -179,7 +174,7 @@ public class CampaignService {
       throw new BusinessException(MessageErrorEnum.CAMPAIGN_NOT_FOUND.getMessage(), 404);
     }
 
-    if (!(campaign.getStatus() == CampaignStatusEnum.ACTIVE || campaign.getStatus() == CampaignStatusEnum.AWAITING)) {
+    if (!(campaign.getStatus() == CampaignStatusEnum.ACTIVE || campaign.getStatus() == CampaignStatusEnum.SCHEDULED)) {
       throw new BusinessException(MessageErrorEnum.CAMPAIGN_PAUSE_ONLY_STATUS_ACTVE_OR_AWAIT.getMessage(), 400);
     }
 

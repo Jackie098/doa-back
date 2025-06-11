@@ -50,7 +50,7 @@ public class Campaign extends BaseEntity {
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
   @Builder.Default
-  private CampaignStatusEnum status = CampaignStatusEnum.AWAITING;
+  private CampaignStatusEnum status = CampaignStatusEnum.SCHEDULED;
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
