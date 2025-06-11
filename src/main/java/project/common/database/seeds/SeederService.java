@@ -25,8 +25,10 @@ import project.v1.entities.enums.UserTypeEnum;
 @ApplicationScoped
 public class SeederService {
   private final Integer QUANTITY_AGENTS = 30;
-  private final Integer QUANTITY_CAMPAIGNS_BY_ACTIVE_AGENT = 10;
-  private final Integer QUANTITY_VOLUNTEERS = 50;
+  private final Integer QUANTITY_CAMPAIGNS_BY_ACTIVE_AGENT = 4;
+  private final Integer QUANTITY_VOLUNTEERS = 100;
+  private final Integer QUANTITY_VOLUNTEERS_SPECIFIC_CAMPAIGN = 20;
+  private final Integer VOLUNTEERS_SPECIFIC_CAMPAIGN_ID = 16;
 
   @Transactional
   public void seed() {
@@ -143,6 +145,27 @@ public class SeederService {
       campaignVolunteer.setUser(user);
       campaignVolunteer.setCampaign(campaign);
       campaignVolunteer.setIsAccepted((randomIndex + 1) % 2 == 0);
+      campaignVolunteers.add(campaignVolunteer);
+    }
+
+    for (int i = 1; i <= QUANTITY_VOLUNTEERS_SPECIFIC_CAMPAIGN; i++) {
+      User user = new User();
+      user.setName("Voluntário spec" + i);
+      user.setEmail("vol_spec" + i + "@email.com");
+      user.setPassword("$2a$12$AUBavi4Bm4tmciYwUKvK3O.RRvOx3LlSAe.fT8p3OE/ZLa8yEYU/q");
+      user.setPhoneNumber("8299111111" + i);
+      user.setType(UserTypeEnum.VOLUNTEER);
+      user.setIsActive(i % 2 == 0);
+      user.setCreatedAt(Instant.now());
+      user.setUpdatedAt(Instant.now());
+      users.add(user);
+
+      Campaign campaign = campaigns.get(VOLUNTEERS_SPECIFIC_CAMPAIGN_ID);
+
+      CampaignVolunteer campaignVolunteer = new CampaignVolunteer();
+      campaignVolunteer.setUser(user);
+      campaignVolunteer.setCampaign(campaign);
+      campaignVolunteer.setIsAccepted(i % 2 == 0);
       campaignVolunteers.add(campaignVolunteer);
     }
 
