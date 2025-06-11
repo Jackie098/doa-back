@@ -1,6 +1,7 @@
 package project.common.mappers;
 
 import project.v1.dtos.user.UserCreateDTO;
+import project.v1.dtos.user.UserExtMinDTO;
 import project.v1.dtos.user.UserMinDTO;
 import project.v1.dtos.volunteer.VolunteerCreateDTO;
 import project.v1.entities.User;
@@ -25,6 +26,13 @@ public class UserMapper {
         .name(user.getName())
         .type(user.getType())
         .createdAt(user.getCreatedAt())
+        .build();
+  }
+
+  public static UserExtMinDTO fromEntityToExtMinimal(User user) {
+    return UserExtMinDTO.builder()
+        .id(user.getId())
+        .name(user.getName())
         .build();
   }
 

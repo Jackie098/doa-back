@@ -1,4 +1,4 @@
-package project.v1.dtos.agent;
+package project.v1.dtos.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AgentMinDTO {
+public class UserExtMinDTO {
   private Long id;
   private String name;
-  private String document;
 }

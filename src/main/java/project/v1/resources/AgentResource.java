@@ -138,4 +138,19 @@ public class AgentResource {
 
     return Response.ok(response).build();
   }
+
+  @GET
+  @Path("/campaign/{id}/volunteer")
+  public Response listCampaignVolunteers(@Context SecurityContext ctx,
+      @PathParam("id") String campaignId,
+      @QueryParam("accepted") Boolean isAccepted) {
+    Long userId = Long.parseLong(jwt.getClaim("id").toString());
+    var result = service.listCampaignVolunteers(userId,
+        Long.parseLong(campaignId), isAccepted);
+
+    var response = ResponseModel.success(Response.Status.OK.getStatusCode(),
+        result);
+
+    return Response.ok(response).build();
+  }
 }

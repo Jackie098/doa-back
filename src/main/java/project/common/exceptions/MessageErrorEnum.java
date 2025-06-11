@@ -28,6 +28,7 @@ public enum MessageErrorEnum {
   CAMPAIGN_ALREADY_CANCELED("Esta campanha já está cancelada."),
   CAMPAIGN_ALREADY_ACTIVE("Campanha já está ativa!"),
   CAMPAIGN_CANCELED_CANNOT_REACTIVATE("Campanhas canceladas não podem ser reativadas."),
+  CAMPAIGN_DONT_BELONG_USER("O usuário não tem acesso a esta campanha!"),
 
   CAMPAIGN_UPDATE_WITHOUT_DATA("Não é possível atualizar uma campanha com nenhum valor novo."),
   CAMPAIGN_UPDATE_DUE_DATE_TO_REACTIVATE(

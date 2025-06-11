@@ -12,12 +12,15 @@ import project.common.exceptions.customs.ForbiddenException;
 import project.common.exceptions.customs.NotFoundException;
 import project.common.mappers.AgentMapper;
 import project.common.mappers.CampaignMapper;
+import project.common.mappers.CampaignVolunteerMapper;
 import project.v1.dtos.agent.AgentCreateDTO;
 import project.v1.dtos.agent.AgentDTO;
 import project.v1.dtos.campaign.CampaignCreateDTO;
 import project.v1.dtos.campaign.CampaignDTO;
 import project.v1.dtos.campaign.CampaignUpdateDTO;
+import project.v1.dtos.campaignVolunteer.CampaignVolunteerDTO;
 import project.v1.entities.Campaign;
+import project.v1.entities.CampaignVolunteer;
 import project.v1.entities.CharityAgent;
 import project.v1.entities.User;
 import project.v1.entities.enums.AgentStatusEnum;
@@ -32,6 +35,8 @@ public class AgentService {
   private PersonService personService;
   @Inject
   private CampaignService campaignService;
+  @Inject
+  private CampaignVolunteerService campaignVolunteerService;
 
   @Inject
   private AgentRepository agentRepository;
@@ -148,5 +153,22 @@ public class AgentService {
   @Transactional
   public void finishCampaign(Long id, Long agentId) {
     campaignService.finish(id, agentId);
+  }
+
+  @Transactional
+  public List<CampaignVolunteerDTO> listCampaignVolunteers(Long userId, Long campaingId, Boolean isAccepted) {
+    campaignService.findById(campaingId).ifPresentOrElse((data) -> {
+      if (!data.getAgent().getUser().getId().equals(userId)) {
+        throw new ForbiddenException(MessageErrorEnum.CAMPAIGN_DONT_BELONG_USER.getMessage());
+      }
+    }, () -> {
+      throw new NotFoundException(MessageErrorEnum.CAMPAIGN_NOT_FOUND.getMessage());
+    });
+
+    List<CampaignVolunteer> volunteers = campaignVolunteerService.listVolunteersByCampaign(campaingId,
+        isAccepted);
+    List<CampaignVolunteerDTO> mapped = CampaignVolunteerMapper.fromEntityToListDTO(volunteers);
+
+    return mapped;
   }
 }
