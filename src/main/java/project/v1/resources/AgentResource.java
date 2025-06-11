@@ -21,10 +21,13 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
 import jakarta.ws.rs.core.Response.Status;
+import project.common.database.Pageable;
 import project.common.requests.ResponseModel;
 import project.v1.dtos.agent.AgentCreateDTO;
 import project.v1.dtos.campaign.CampaignCreateDTO;
 import project.v1.dtos.campaign.CampaignUpdateDTO;
+import project.v1.dtos.campaignVolunteer.CampaignVolunteerDTO;
+import project.v1.dtos.common.PageDTO;
 import project.v1.entities.enums.CampaignStatusEnum;
 import project.v1.services.AgentService;
 
@@ -143,10 +146,14 @@ public class AgentResource {
   @Path("/campaign/{id}/volunteer")
   public Response listCampaignVolunteers(@Context SecurityContext ctx,
       @PathParam("id") String campaignId,
-      @QueryParam("accepted") Boolean isAccepted) {
+      @QueryParam("accepted") Boolean isAccepted,
+      @QueryParam("page") Integer page,
+      @QueryParam("size") Integer size) {
     Long userId = Long.parseLong(jwt.getClaim("id").toString());
-    var result = service.listCampaignVolunteers(userId,
-        Long.parseLong(campaignId), isAccepted);
+    PageDTO pageDTO = PageDTO.builder().page(page).size(size).build();
+
+    Pageable<CampaignVolunteerDTO> result = service.listCampaignVolunteers(userId,
+        Long.parseLong(campaignId), isAccepted, pageDTO);
 
     var response = ResponseModel.success(Response.Status.OK.getStatusCode(),
         result);

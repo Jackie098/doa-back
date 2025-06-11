@@ -6,6 +6,7 @@ import java.util.Optional;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import project.common.database.Pageable;
 import project.common.exceptions.MessageErrorEnum;
 import project.common.exceptions.customs.ConflictException;
 import project.common.exceptions.customs.ForbiddenException;
@@ -19,6 +20,7 @@ import project.v1.dtos.campaign.CampaignCreateDTO;
 import project.v1.dtos.campaign.CampaignDTO;
 import project.v1.dtos.campaign.CampaignUpdateDTO;
 import project.v1.dtos.campaignVolunteer.CampaignVolunteerDTO;
+import project.v1.dtos.common.PageDTO;
 import project.v1.entities.Campaign;
 import project.v1.entities.CampaignVolunteer;
 import project.v1.entities.CharityAgent;
@@ -156,7 +158,8 @@ public class AgentService {
   }
 
   @Transactional
-  public List<CampaignVolunteerDTO> listCampaignVolunteers(Long userId, Long campaingId, Boolean isAccepted) {
+  public Pageable<CampaignVolunteerDTO> listCampaignVolunteers(Long userId, Long campaingId, Boolean isAccepted,
+      PageDTO pageDTO) {
     campaignService.findById(campaingId).ifPresentOrElse((data) -> {
       if (!data.getAgent().getUser().getId().equals(userId)) {
         throw new ForbiddenException(MessageErrorEnum.CAMPAIGN_DONT_BELONG_USER.getMessage());
@@ -165,9 +168,9 @@ public class AgentService {
       throw new NotFoundException(MessageErrorEnum.CAMPAIGN_NOT_FOUND.getMessage());
     });
 
-    List<CampaignVolunteer> volunteers = campaignVolunteerService.listVolunteersByCampaign(campaingId,
-        isAccepted);
-    List<CampaignVolunteerDTO> mapped = CampaignVolunteerMapper.fromEntityToListDTO(volunteers);
+    Pageable<CampaignVolunteer> volunteers = campaignVolunteerService.listVolunteersByCampaign(campaingId,
+        isAccepted, pageDTO);
+    Pageable<CampaignVolunteerDTO> mapped = CampaignVolunteerMapper.fromEntityToPageableDTO(volunteers);
 
     return mapped;
   }

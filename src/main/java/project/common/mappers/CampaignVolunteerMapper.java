@@ -2,6 +2,7 @@ package project.common.mappers;
 
 import java.util.List;
 
+import project.common.database.Pageable;
 import project.v1.dtos.campaignVolunteer.CampaignVolunteerDTO;
 import project.v1.dtos.user.UserExtMinDTO;
 import project.v1.entities.Campaign;
@@ -27,9 +28,17 @@ public class CampaignVolunteerMapper {
         .build();
   }
 
-  public static List<CampaignVolunteerDTO> fromEntityToListDTO(List<CampaignVolunteer> data) {
-    return data.stream().map((item) -> {
+  public static Pageable<CampaignVolunteerDTO> fromEntityToPageableDTO(Pageable<CampaignVolunteer> data) {
+    List<CampaignVolunteerDTO> dto = data.getPage().stream().map((item) -> {
       return fromEntityToDTO(item);
     }).toList();
+
+    Pageable.PageableBuilder<CampaignVolunteerDTO> builder = Pageable.builder();
+    builder.pageSize(data.getPageSize());
+    builder.totalPages(data.getTotalPages());
+    builder.totalElements(data.getTotalElements());
+    builder.page(dto);
+
+    return builder.build();
   }
 }

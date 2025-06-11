@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import project.common.database.Pageable;
 
 @Data
 @Builder
@@ -26,8 +27,10 @@ public class ResponseModel<T> {
 
   private T data;
 
+  private Integer pageSize;
+  private Integer currentPage;
   private Long totalElements;
-  private Integer totalPages;
+  private Integer totalPage;
 
   @JsonInclude(Include.NON_NULL)
   private List<T> list;
@@ -49,20 +52,38 @@ public class ResponseModel<T> {
     return ret;
   }
 
-  public static <T> ResponseModel<T> success(Integer statusCode, T data) {
-    ResponseModel<T> ret = new ResponseModel<T>();
-    ret.setStatus(ResponseModel.SUCESS);
-    ret.setStatusCode(statusCode);
-    ret.setData(data);
-    return ret;
-  }
-
   public static <T> ResponseModel<T> success(Integer statusCode, List<T> data) {
     ResponseModel<T> ret = new ResponseModel<T>();
     ret.status = ResponseModel.SUCESS;
     ret.setStatusCode(statusCode);
     ret.setList(data);
 
+    ret.setCurrentPage(1);
+    ret.setTotalElements((long) data.size());
+    ret.setTotalPage(1);
+
+    return ret;
+  }
+
+  public static <T> ResponseModel<T> success(Integer statusCode, Pageable<T> data) {
+    ResponseModel<T> ret = new ResponseModel<T>();
+    ret.status = ResponseModel.SUCESS;
+    ret.setStatusCode(statusCode);
+    ret.setList(data.getPage());
+
+    // ret.setCurrentPage(data.getPageSize());
+    ret.setPageSize(data.getPageSize());
+    ret.setTotalElements(data.getTotalElements());
+    ret.setTotalPage(data.getTotalPages());
+
+    return ret;
+  }
+
+  public static <T> ResponseModel<T> success(Integer statusCode, T data) {
+    ResponseModel<T> ret = new ResponseModel<T>();
+    ret.setStatus(ResponseModel.SUCESS);
+    ret.setStatusCode(statusCode);
+    ret.setData(data);
     return ret;
   }
 
