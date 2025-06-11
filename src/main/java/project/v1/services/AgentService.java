@@ -7,7 +7,9 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import project.common.exceptions.MessageErrorEnum;
-import project.common.exceptions.customs.BusinessException;
+import project.common.exceptions.customs.ConflictException;
+import project.common.exceptions.customs.ForbiddenException;
+import project.common.exceptions.customs.NotFoundException;
 import project.common.mappers.AgentMapper;
 import project.common.mappers.CampaignMapper;
 import project.v1.dtos.agent.AgentCreateDTO;
@@ -68,19 +70,19 @@ public class AgentService {
     userService
         .findByEmailOrPhoneNumber(dto.getUser().getEmail(), dto.getUser().getPhoneNumber())
         .ifPresent(user -> {
-          throw new BusinessException(MessageErrorEnum.USER_ALREADY_EXISTS.getMessage(), 409);
+          throw new ConflictException(MessageErrorEnum.USER_ALREADY_EXISTS.getMessage());
         });
 
     personService
         .findByEmailOrDocumentOrPhone(dto.getResponsibleLegal().getEmail(),
             dto.getResponsibleLegal().getDocument(), dto.getResponsibleLegal().getPhoneNumber())
         .ifPresent(person -> {
-          throw new BusinessException(MessageErrorEnum.LEGAL_RESPONSIBLE_ALREADY_EXISTS.getMessage(), 409);
+          throw new ConflictException(MessageErrorEnum.LEGAL_RESPONSIBLE_ALREADY_EXISTS.getMessage());
         });
 
     this.findByDocumentAndPix(dto.getDocument(), dto.getPixKey())
         .ifPresent(agent -> {
-          throw new BusinessException(MessageErrorEnum.AGENT_ALREADY_EXISTS.getMessage(), 409);
+          throw new ConflictException(MessageErrorEnum.AGENT_ALREADY_EXISTS.getMessage());
         });
 
     var user = userService.create(dto.getUser());
@@ -96,10 +98,10 @@ public class AgentService {
   @Transactional
   public void disableFirstAccess(String email) {
     User user = userService.findByEmailOrPhoneNumber(email, null)
-        .orElseThrow(() -> new BusinessException(MessageErrorEnum.USER_NOT_FOUND.getMessage(), 404));
+        .orElseThrow(() -> new NotFoundException(MessageErrorEnum.USER_NOT_FOUND.getMessage()));
 
     if (!user.getIsActive()) {
-      throw new BusinessException(MessageErrorEnum.ACCOUNT_INVALID_TO_ACTION.getMessage(), 403);
+      throw new ForbiddenException(MessageErrorEnum.ACCOUNT_INVALID_TO_ACTION.getMessage());
     }
 
     user.setFirstAccess(false);

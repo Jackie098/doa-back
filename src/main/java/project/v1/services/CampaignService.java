@@ -7,7 +7,10 @@ import java.util.Optional;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import project.common.exceptions.MessageErrorEnum;
+import project.common.exceptions.customs.BadRequestException;
 import project.common.exceptions.customs.BusinessException;
+import project.common.exceptions.customs.ConflictException;
+import project.common.exceptions.customs.NotFoundException;
 import project.common.mappers.CampaignMapper;
 import project.v1.dtos.campaign.CampaignCreateDTO;
 import project.v1.dtos.campaign.CampaignUpdateDTO;
@@ -47,7 +50,7 @@ public class CampaignService {
 
   public Campaign create(CampaignCreateDTO dto) {
     CharityAgent agent = agentService.findById(dto.getAgentId())
-        .orElseThrow(() -> new BusinessException(MessageErrorEnum.AGENT_NOT_FOUND.getMessage(), 404));
+        .orElseThrow(() -> new NotFoundException(MessageErrorEnum.AGENT_NOT_FOUND.getMessage()));
 
     if (Boolean.FALSE.equals(dto.getStartNow()) && dto.getStartDate() == null) {
       throw new BusinessException(
@@ -59,11 +62,11 @@ public class CampaignService {
     }
 
     if (dto.getDueDate().isBefore(dto.getStartDate())) {
-      throw new BusinessException(MessageErrorEnum.SCHEDULED_CAMPAIGN_INVALID_DUE_DATE.getMessage(), 400);
+      throw new BusinessException(MessageErrorEnum.CAMPAIGN_DUE_DATE_BEFORE_START_DATE.getMessage(), 400);
     }
 
     if (verifySlug(dto)) {
-      throw new BusinessException(MessageErrorEnum.CAMPAIGN_SLUG_ALREADY_EXISTS.getMessage(), 400);
+      throw new ConflictException(MessageErrorEnum.CAMPAIGN_SLUG_ALREADY_EXISTS.getMessage());
     }
 
     if (Boolean.TRUE.equals(dto.getStartNow())) {
@@ -83,19 +86,19 @@ public class CampaignService {
 
   public Campaign update(CampaignUpdateDTO dto) {
     if (dto == null || isEmptyUpdateDTO(dto)) {
-      throw new BusinessException("Não é possível atualizar uma campanha com nenhum valor novo.", 400);
+      throw new BadRequestException(MessageErrorEnum.CAMPAIGN_UPDATE_WITHOUT_DATA.getMessage());
     }
 
     Campaign campaign = campaignRepository.find("id = ?1 AND agent.user.id = ?2", dto.getId(), dto.getAgentId())
         .firstResult();
 
     if (campaign == null) {
-      throw new BusinessException(MessageErrorEnum.CAMPAIGN_NOT_FOUND.getMessage(), 404);
+      throw new NotFoundException(MessageErrorEnum.CAMPAIGN_NOT_FOUND.getMessage());
     }
 
     // Alterar ticketPrice somente SE status = AWAITING
     if (dto.getTicketPrice() != null && campaign.getStatus() != CampaignStatusEnum.AWAITING) {
-      throw new BusinessException("Somente é possível alterar o valor do ticket antes da campanha começar.", 400);
+      throw new BusinessException(MessageErrorEnum.CAMPAIGN_UPDATE_TICKET_PRICE_BEFORE_START.getMessage(), 400);
     }
 
     if (campaign.getStatus() == CampaignStatusEnum.CANCELED
@@ -105,36 +108,36 @@ public class CampaignService {
       Integer currentTotal = campaign.getTotalTickets() != null ? campaign.getTotalTickets() : 0;
       // TODO: Alterar totalTickets pra menos somente se ainda há tickets disponíveis
       if (dto.getTotalTickets() != null && newTotal < currentTotal) {
-        throw new BusinessException("Diminuir a quantidade total de tickets duma campanha ainda não é possível", 400);
+        throw new BusinessException("Diminuir a quantidade total de tickets duma campanha ainda não é possível", 501);
       }
 
       // Alterar totalTickets para mais SE campanha NÂO cancelada OU finalizada
       if (newTotal > currentTotal) {
         throw new BusinessException(
-            "Não é possível alterar o total de tickets pois a campanha está cancelada ou finalizada.", 400);
+            MessageErrorEnum.CAMPAIGN_UPDATE_TOTAL_TICKETS_STATUS_INACTIVE.getMessage(), 400);
       }
     }
 
     // Alterar startDate SE (status == AWAITING) E startDate < dueDate
     if (dto.getStartDate() != null) {
       if (campaign.getStatus() != CampaignStatusEnum.AWAITING) {
-        throw new BusinessException("Só é possível alterar a data de início se a campanha estiver agendada (AWAITING).",
+        throw new BusinessException(MessageErrorEnum.SCHEDULED_CAMPAIGN_UPDATE_START_DATE.getMessage(),
             400);
       }
 
       if (campaign.getDueDate() != null && dto.getStartDate().isAfter(campaign.getDueDate())) {
-        throw new BusinessException("A data de início não pode ser posterior à data de término.", 400);
+        throw new BusinessException(MessageErrorEnum.CAMPAIGN_START_DATE_AFTER_DUE_DATE.getMessage(), 400);
       }
     }
 
     // Alterar dueDate SE status != CANCELED
     if (dto.getDueDate() != null) {
       if (campaign.getStatus() == CampaignStatusEnum.CANCELED) {
-        throw new BusinessException("Não é possível alterar a data de término de uma campanha cancelada.", 400);
+        throw new BusinessException(MessageErrorEnum.CAMPAIGN_DUE_DATE_STATUS_CANCELED.getMessage(), 400);
       }
 
       if (campaign.getStartDate().isAfter(dto.getDueDate())) {
-        throw new BusinessException("A data de finalização não deve ser anterior a data de início.", 400);
+        throw new BusinessException(MessageErrorEnum.CAMPAIGN_DUE_DATE_BEFORE_START_DATE.getMessage(), 400);
       }
     }
 
@@ -156,12 +159,12 @@ public class CampaignService {
     }
 
     if (campaign.getStatus() == CampaignStatusEnum.CANCELED) {
-      throw new BusinessException(MessageErrorEnum.ACTIVATE_CANCELED_CAMPAIGN.getMessage(), 400);
+      throw new BusinessException(MessageErrorEnum.CAMPAIGN_CANCELED_CANNOT_REACTIVATE.getMessage(), 400);
     }
 
     if (campaign.getFinishedDate() != null || campaign.getStatus() == CampaignStatusEnum.FINISHED) {
       if (campaign.getDueDate().isBefore(Instant.now())) {
-        throw new BusinessException(MessageErrorEnum.UPDATE_DUE_DATE_CAMPAIGN.getMessage(),
+        throw new BusinessException(MessageErrorEnum.CAMPAIGN_UPDATE_DUE_DATE_TO_REACTIVATE.getMessage(),
             404);
       }
     }
@@ -177,7 +180,7 @@ public class CampaignService {
     }
 
     if (!(campaign.getStatus() == CampaignStatusEnum.ACTIVE || campaign.getStatus() == CampaignStatusEnum.AWAITING)) {
-      throw new BusinessException(MessageErrorEnum.PAUSE_ONLY_ACITVE_OR_AWAIT_CAMPAIN.getMessage(), 400);
+      throw new BusinessException(MessageErrorEnum.CAMPAIGN_PAUSE_ONLY_STATUS_ACTVE_OR_AWAIT.getMessage(), 400);
     }
 
     if (campaign.getFinishedDate() != null) {
@@ -213,11 +216,11 @@ public class CampaignService {
     }
 
     if (campaign.getStatus() != CampaignStatusEnum.ACTIVE) {
-      throw new BusinessException(MessageErrorEnum.FINISH_ONLY_ACITVE_CAMPAIN.getMessage(), 400);
+      throw new BusinessException(MessageErrorEnum.CAMPAIGN_FINISH_ONLY_STATUS_ACTIVE.getMessage(), 400);
     }
 
     if (campaign.getDueDate().isBefore(Instant.now())) {
-      throw new BusinessException(MessageErrorEnum.DUE_DATE_ACTIVE_CAMPAIGN.getMessage(), 400);
+      throw new BusinessException(MessageErrorEnum.CAMPAIGN_PASSED_DEADLINE.getMessage(), 400);
     }
 
     if (campaign.getFinishedDate() != null) {

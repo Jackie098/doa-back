@@ -3,7 +3,8 @@ package project.v1.services;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import project.common.exceptions.MessageErrorEnum;
-import project.common.exceptions.customs.BusinessException;
+import project.common.exceptions.customs.BadRequestException;
+import project.common.exceptions.customs.NotFoundException;
 import project.common.mappers.AuthMapper;
 import project.common.utils.PasswordUtils;
 import project.common.utils.TokenUtils;
@@ -23,10 +24,10 @@ public class AuthService {
 
   public AuthDTO signIn(AuthCreateDTO dto) {
     User user = userService.findByEmailOrPhoneNumber(dto.getEmail(), null)
-        .orElseThrow(() -> new BusinessException(MessageErrorEnum.USER_NOT_FOUND.getMessage(), 404));
+        .orElseThrow(() -> new NotFoundException(MessageErrorEnum.USER_NOT_FOUND.getMessage()));
 
     if (PasswordUtils.checkPass(user.getPassword(), dto.getPassword())) {
-      throw new BusinessException(MessageErrorEnum.USER_PASS_NOT_MATCH.getMessage(), 400);
+      throw new BadRequestException(MessageErrorEnum.USER_PASS_NOT_MATCH.getMessage());
     }
 
     String token = TokenUtils.generateToken(user);
@@ -36,12 +37,12 @@ public class AuthService {
 
   public AuthExtDTO me(String email) {
     User user = userService.findByEmailOrPhoneNumber(email, null)
-        .orElseThrow(() -> new BusinessException(MessageErrorEnum.USER_NOT_FOUND.getMessage(), 404));
+        .orElseThrow(() -> new NotFoundException(MessageErrorEnum.USER_NOT_FOUND.getMessage()));
 
     CharityAgent agent = null;
     if (user.getType().equals(UserTypeEnum.CHARITY_AGENT)) {
       agent = agentService.findByUser(user)
-          .orElseThrow(() -> new BusinessException("Nenhum agent encontrado para este usuário", 404));
+          .orElseThrow(() -> new BadRequestException(MessageErrorEnum.USER_LINKED_NON_EXISTENT_AGENT.getMessage()));
     }
 
     return AuthMapper.fromUserToDTO(user, agent);
