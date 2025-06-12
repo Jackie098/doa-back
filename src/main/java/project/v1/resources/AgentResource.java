@@ -150,7 +150,7 @@ public class AgentResource {
       @QueryParam("page") Integer page,
       @QueryParam("size") Integer size) {
     Long userId = Long.parseLong(jwt.getClaim("id").toString());
-    PageDTO pageDTO = PageDTO.builder().page(page).size(size).build();
+    PageDTO pageDTO = PageDTO.of(page, size);
 
     Pageable<CampaignVolunteerDTO> result = service.listCampaignVolunteers(userId,
         Long.parseLong(campaignId), isAccepted, pageDTO);

@@ -29,15 +29,16 @@ public class CampaignVolunteerMapper {
   }
 
   public static Pageable<CampaignVolunteerDTO> fromEntityToPageableDTO(Pageable<CampaignVolunteer> data) {
-    List<CampaignVolunteerDTO> dto = data.getPage().stream().map((item) -> {
+    List<CampaignVolunteerDTO> dto = data.getData().stream().map((item) -> {
       return fromEntityToDTO(item);
     }).toList();
 
     Pageable.PageableBuilder<CampaignVolunteerDTO> builder = Pageable.builder();
+    builder.data(dto);
     builder.pageSize(data.getPageSize());
     builder.totalPages(data.getTotalPages());
     builder.totalElements(data.getTotalElements());
-    builder.page(dto);
+    builder.currentPage(data.getCurrentPage());
 
     return builder.build();
   }

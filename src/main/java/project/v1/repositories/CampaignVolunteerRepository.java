@@ -5,7 +5,6 @@ import java.util.Map;
 
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
-import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import project.common.database.Pageable;
 import project.v1.dtos.common.PageDTO;
@@ -26,13 +25,14 @@ public class CampaignVolunteerRepository implements PanacheRepository<CampaignVo
     }
 
     PanacheQuery<CampaignVolunteer> query = find(stringBuilder.toString(), params)
-        .page(Page.of(pageDTO.getPage(), pageDTO.getSize()));
+        .page(pageDTO.getPagination());
 
     Pageable.PageableBuilder<CampaignVolunteer> builder = Pageable.builder();
-    builder.page(query.list());
-    builder.pageSize(query.list().size());
+    builder.data(query.list());
     builder.totalElements(query.count());
     builder.totalPages(query.pageCount());
+    builder.pageSize(query.list().size());
+    builder.currentPage(pageDTO.getOneBasePage());
 
     return builder.build();
   }

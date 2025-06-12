@@ -43,9 +43,11 @@ public class GenericMapper {
   public <T> Pageable<T> toPageable(Pageable<?> pageable, Class<T> clazz) {
     if (Objects.isNull(pageable))
       return Pageable.<T>builder().build();
-    List<T> mappedPage = pageable.getPage().stream().map(obj -> toObject(obj, clazz)).collect(Collectors.toList());
+
+    List<T> mappedData = pageable.getData().stream().map(obj -> toObject(obj, clazz)).collect(Collectors.toList());
+
     return Pageable.<T>builder()
-        .page(mappedPage)
+        .data(mappedData)
         .pageSize(pageable.getPageSize())
         .totalElements(pageable.getTotalElements())
         .build();

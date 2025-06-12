@@ -12,8 +12,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Pageable<T> {
-    private List<T> page;
+    private List<T> data;
     private Long totalElements;
     private Integer totalPages;
     private Integer pageSize;
+    private Integer currentPage;
 }
