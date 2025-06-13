@@ -43,15 +43,10 @@ public class AgentService {
   @Inject
   private AgentRepository agentRepository;
 
-  public List<AgentDTO> listAgents(AgentStatusEnum status) {
-    List<CharityAgent> result = null;
-    if (status == null) {
-      result = agentRepository.listAll();
-    } else {
-      result = agentRepository.find("status", status).list();
-    }
+  public Pageable<AgentDTO> listAgents(AgentStatusEnum status, PageDTO pageDTO) {
+    Pageable<CharityAgent> result = agentRepository.list(status, pageDTO);
 
-    var mappedResult = AgentMapper.fromEntityToListResponseDTO(result);
+    var mappedResult = AgentMapper.fromEntityToPageableResponseDTO(result);
 
     return mappedResult;
   }

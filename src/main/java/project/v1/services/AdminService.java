@@ -1,14 +1,14 @@
 package project.v1.services;
 
-import java.util.List;
-
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import project.common.database.Pageable;
 import project.common.exceptions.MessageErrorEnum;
 import project.common.exceptions.customs.NotFoundException;
 import project.v1.dtos.agent.AgentDTO;
 import project.v1.dtos.agent.AgentValidateDTO;
+import project.v1.dtos.common.PageDTO;
 import project.v1.entities.CharityAgent;
 import project.v1.entities.enums.AgentStatusEnum;
 
@@ -17,8 +17,8 @@ public class AdminService {
   @Inject
   private AgentService agentService;
 
-  public List<AgentDTO> listAgents(AgentStatusEnum status) {
-    return agentService.listAgents(status);
+  public Pageable<AgentDTO> listAgents(AgentStatusEnum status, PageDTO pageDTO) {
+    return agentService.listAgents(status, pageDTO);
   }
 
   @Transactional

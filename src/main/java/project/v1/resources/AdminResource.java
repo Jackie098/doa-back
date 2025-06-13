@@ -15,6 +15,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import project.common.requests.ResponseModel;
 import project.v1.dtos.agent.AgentValidateDTO;
+import project.v1.dtos.common.PageDTO;
 import project.v1.entities.enums.AgentStatusEnum;
 import project.v1.services.AdminService;
 
@@ -28,8 +29,10 @@ public class AdminResource {
 
   @GET
   @Path("/agent")
-  public Response listAgents(@QueryParam("status") AgentStatusEnum status) {
-    var result = service.listAgents(status);
+  public Response listAgents(@QueryParam("status") AgentStatusEnum status,
+      @QueryParam("page") Integer page,
+      @QueryParam("size") Integer size) {
+    var result = service.listAgents(status, PageDTO.of(page, size));
     var response = ResponseModel.success(Status.OK.getStatusCode(), result);
 
     return Response.ok(response).build();

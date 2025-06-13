@@ -2,9 +2,11 @@ package project.common.mappers;
 
 import java.util.List;
 
+import project.common.database.Pageable;
 import project.v1.dtos.agent.AgentCreateDTO;
 import project.v1.dtos.agent.AgentDTO;
 import project.v1.dtos.agent.AgentMinDTO;
+import project.v1.dtos.campaignVolunteer.CampaignVolunteerDTO;
 import project.v1.entities.CharityAgent;
 import project.v1.entities.Person;
 import project.v1.entities.User;
@@ -38,6 +40,21 @@ public class AgentMapper {
     return agents.stream()
         .map(agent -> fromEntityToResponse(agent))
         .toList();
+  }
+
+  public static Pageable<AgentDTO> fromEntityToPageableResponseDTO(Pageable<CharityAgent> data) {
+    List<AgentDTO> dto = data.getData().stream()
+        .map(agent -> fromEntityToResponse(agent))
+        .toList();
+
+    Pageable.PageableBuilder<AgentDTO> builder = Pageable.builder();
+    builder.data(dto);
+    builder.pageSize(data.getPageSize());
+    builder.totalPages(data.getTotalPages());
+    builder.totalElements(data.getTotalElements());
+    builder.currentPage(data.getCurrentPage());
+
+    return builder.build();
   }
 
   public static AgentDTO fromEntityToResponse(CharityAgent agent) {
