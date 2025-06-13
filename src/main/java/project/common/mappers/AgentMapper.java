@@ -6,7 +6,6 @@ import project.common.database.Pageable;
 import project.v1.dtos.agent.AgentCreateDTO;
 import project.v1.dtos.agent.AgentDTO;
 import project.v1.dtos.agent.AgentMinDTO;
-import project.v1.dtos.campaignVolunteer.CampaignVolunteerDTO;
 import project.v1.entities.CharityAgent;
 import project.v1.entities.Person;
 import project.v1.entities.User;

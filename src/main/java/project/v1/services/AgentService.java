@@ -109,9 +109,9 @@ public class AgentService {
     user.setFirstAccess(false);
   }
 
-  public List<CampaignDTO> listCampaign(CampaignStatusEnum status, Long userId) {
-    var result = campaignService.list(status, userId);
-    var mapped = CampaignMapper.fromEntityToListCampaignDTO(result);
+  public Pageable<CampaignDTO> listCampaign(CampaignStatusEnum status, Long userId, PageDTO pageDTO) {
+    var result = campaignService.list(status, userId, pageDTO);
+    var mapped = CampaignMapper.fromEntityToPageableCampaignDTO(result);
 
     return mapped;
   }

@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import project.common.database.Pageable;
 import project.common.exceptions.MessageErrorEnum;
 import project.common.exceptions.customs.BadRequestException;
 import project.common.exceptions.customs.BusinessException;
@@ -14,6 +15,7 @@ import project.common.exceptions.customs.NotFoundException;
 import project.common.mappers.CampaignMapper;
 import project.v1.dtos.campaign.CampaignCreateDTO;
 import project.v1.dtos.campaign.CampaignUpdateDTO;
+import project.v1.dtos.common.PageDTO;
 import project.v1.entities.Campaign;
 import project.v1.entities.CharityAgent;
 import project.v1.entities.enums.CampaignStatusEnum;
@@ -27,16 +29,8 @@ public class CampaignService {
   @Inject
   private AgentService agentService;
 
-  public List<Campaign> list(CampaignStatusEnum status, Long userId) {
-    List<Campaign> result = null;
-
-    if (status == null) {
-      result = campaignRepository.list("agent.user.id = ?1", userId);
-    } else {
-      result = campaignRepository.list("agent.user.id = ?1 AND status = ?2", userId, status);
-    }
-
-    return result;
+  public Pageable<Campaign> list(CampaignStatusEnum status, Long userId, PageDTO pageDTO) {
+    return campaignRepository.list(status, userId, pageDTO);
   }
 
   public Optional<Campaign> findById(Long campaignId) {

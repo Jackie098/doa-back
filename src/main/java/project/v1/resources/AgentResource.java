@@ -25,6 +25,7 @@ import project.common.database.Pageable;
 import project.common.requests.ResponseModel;
 import project.v1.dtos.agent.AgentCreateDTO;
 import project.v1.dtos.campaign.CampaignCreateDTO;
+import project.v1.dtos.campaign.CampaignDTO;
 import project.v1.dtos.campaign.CampaignUpdateDTO;
 import project.v1.dtos.campaignVolunteer.CampaignVolunteerDTO;
 import project.v1.dtos.common.PageDTO;
@@ -63,10 +64,12 @@ public class AgentResource {
 
   @GET
   @Path("/campaign")
-  public Response listCampaign(@Context SecurityContext ctx, @QueryParam("status") CampaignStatusEnum status) {
+  public Response listCampaign(@Context SecurityContext ctx, @QueryParam("status") CampaignStatusEnum status,
+      @QueryParam("page") Integer page,
+      @QueryParam("size") Integer size) {
     Long agentId = Long.parseLong(jwt.getClaim("id").toString());
 
-    var result = service.listCampaign(status, agentId);
+    Pageable<CampaignDTO> result = service.listCampaign(status, agentId, PageDTO.of(page, size));
     var response = ResponseModel.success(Status.OK.getStatusCode(), result);
 
     return Response.ok(response).build();
@@ -150,10 +153,9 @@ public class AgentResource {
       @QueryParam("page") Integer page,
       @QueryParam("size") Integer size) {
     Long userId = Long.parseLong(jwt.getClaim("id").toString());
-    PageDTO pageDTO = PageDTO.of(page, size);
 
     Pageable<CampaignVolunteerDTO> result = service.listCampaignVolunteers(userId,
-        Long.parseLong(campaignId), isAccepted, pageDTO);
+        Long.parseLong(campaignId), isAccepted, PageDTO.of(page, size));
 
     var response = ResponseModel.success(Response.Status.OK.getStatusCode(),
         result);

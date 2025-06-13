@@ -3,6 +3,8 @@ package project.common.mappers;
 import java.util.List;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import project.common.database.Pageable;
+import project.v1.dtos.agent.AgentDTO;
 import project.v1.dtos.campaign.CampaignCreateDTO;
 import project.v1.dtos.campaign.CampaignDTO;
 import project.v1.entities.Campaign;
@@ -53,5 +55,20 @@ public class CampaignMapper {
     return campaigns.stream()
         .map(campaign -> fromEntityToCampaignDTO(campaign))
         .toList();
+  }
+
+  public static Pageable<CampaignDTO> fromEntityToPageableCampaignDTO(Pageable<Campaign> data) {
+    List<CampaignDTO> dto = data.getData().stream()
+        .map(campaign -> fromEntityToCampaignDTO(campaign))
+        .toList();
+
+    Pageable.PageableBuilder<CampaignDTO> builder = Pageable.builder();
+    builder.data(dto);
+    builder.pageSize(data.getPageSize());
+    builder.totalPages(data.getTotalPages());
+    builder.totalElements(data.getTotalElements());
+    builder.currentPage(data.getCurrentPage());
+
+    return builder.build();
   }
 }
