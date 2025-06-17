@@ -28,6 +28,7 @@ import project.v1.dtos.campaign.CampaignCreateDTO;
 import project.v1.dtos.campaign.CampaignDTO;
 import project.v1.dtos.campaign.CampaignUpdateDTO;
 import project.v1.dtos.campaignVolunteer.CampaignVolunteerDTO;
+import project.v1.dtos.common.ManyReferencesDTO;
 import project.v1.dtos.common.PageDTO;
 import project.v1.entities.enums.CampaignStatusEnum;
 import project.v1.services.AgentService;
@@ -161,5 +162,16 @@ public class AgentResource {
         result);
 
     return Response.ok(response).build();
+  }
+
+  @PATCH
+  @Path("campaign/{id}/volunteer/accept")
+  public Response acceptVolunteers(@Context SecurityContext ctx, @PathParam("id") String campaignId,
+      @Valid ManyReferencesDTO dto) {
+    Long userId = Long.parseLong(jwt.getClaim("id").toString());
+
+    service.acceptVolunteers(userId, Long.parseLong(campaignId), dto);
+
+    return Response.accepted().build();
   }
 }

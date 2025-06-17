@@ -41,7 +41,9 @@ public enum MessageErrorEnum {
   CAMPAIGN_START_DATE_AFTER_DUE_DATE("A data de início não pode ser posterior à data de término."),
   CAMPAIGN_DUE_DATE_STATUS_CANCELED("Não é possível alterar a data de término de uma campanha cancelada."),
   CAMPAIGN_NOT_RECEIVE_NEW_VOLUNTEER("Campanha não pode receber novos voluntários porque está inativa."),
-  CAMPAIGN_VOLUNTEER_BIND_ALREADY_EXISTS("O voluntário já está vinculado nesta campanha!");
+  CAMPAIGN_VOLUNTEER_BIND_ALREADY_EXISTS("O voluntário já está vinculado nesta campanha!"),
+
+  VOLUNTEERS_DONT_BELONGS_CAMPAIGN("Usuários não encontrados, não vinculados à esta campanha ou já foram aceitos.");
 
   public String message;
 

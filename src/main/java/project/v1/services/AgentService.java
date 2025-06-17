@@ -2,12 +2,15 @@ package project.v1.services;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import project.common.database.Pageable;
 import project.common.exceptions.MessageErrorEnum;
+import project.common.exceptions.customs.BadRequestException;
 import project.common.exceptions.customs.ConflictException;
 import project.common.exceptions.customs.ForbiddenException;
 import project.common.exceptions.customs.NotFoundException;
@@ -20,6 +23,7 @@ import project.v1.dtos.campaign.CampaignCreateDTO;
 import project.v1.dtos.campaign.CampaignDTO;
 import project.v1.dtos.campaign.CampaignUpdateDTO;
 import project.v1.dtos.campaignVolunteer.CampaignVolunteerDTO;
+import project.v1.dtos.common.ManyReferencesDTO;
 import project.v1.dtos.common.PageDTO;
 import project.v1.entities.Campaign;
 import project.v1.entities.CampaignVolunteer;
@@ -168,5 +172,35 @@ public class AgentService {
     Pageable<CampaignVolunteerDTO> mapped = CampaignVolunteerMapper.fromEntityToPageableDTO(volunteers);
 
     return mapped;
+  }
+
+  @Transactional
+  public void acceptVolunteers(Long userId, Long campaignId, ManyReferencesDTO dto) {
+    // validar se campanha pertence ao usuário
+    Campaign campaign = campaignService.findById(campaignId)
+        .orElseThrow(() -> new NotFoundException(MessageErrorEnum.CAMPAIGN_NOT_FOUND.getMessage()));
+
+    if (campaign.getAgent().getId() != userId) {
+      throw new BadRequestException(MessageErrorEnum.CAMPAIGN_DONT_BELONG_USER.getMessage());
+    }
+
+    // validar cada id usuário selecionado
+    List<CampaignVolunteer> volunteers = campaignVolunteerService.listVolunteersInRange(campaignId, dto);
+    Set<Long> foundIds = volunteers.stream()
+        .map(cv -> cv.getId())
+        .collect(Collectors.toSet());
+    System.out.println("foundIds -> " + foundIds);
+
+    List<Long> notFound = dto.getData().stream()
+        .filter(id -> !foundIds.contains(id))
+        .toList();
+    System.out.println("NotFound -> " + notFound);
+
+    if (!notFound.isEmpty()) {
+      throw new BadRequestException(MessageErrorEnum.VOLUNTEERS_DONT_BELONGS_CAMPAIGN.getMessage());
+    }
+
+    // alterar todos pra accepted = true
+    volunteers.forEach(v -> v.setIsAccepted(true));
   }
 }

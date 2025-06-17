@@ -1,7 +1,6 @@
 package project.v1.services;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.Optional;
 
 import jakarta.enterprise.context.ApplicationScoped;

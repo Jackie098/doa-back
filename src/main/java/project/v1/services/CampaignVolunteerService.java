@@ -1,11 +1,13 @@
 package project.v1.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import project.common.database.Pageable;
 import project.common.mappers.CampaignVolunteerMapper;
+import project.v1.dtos.common.ManyReferencesDTO;
 import project.v1.dtos.common.PageDTO;
 import project.v1.entities.Campaign;
 import project.v1.entities.CampaignVolunteer;
@@ -29,5 +31,9 @@ public class CampaignVolunteerService {
 
   public Pageable<CampaignVolunteer> listVolunteersByCampaign(Long campaignId, Boolean isAccepted, PageDTO pageDTO) {
     return repository.listVolunteersByCampaign(campaignId, isAccepted, pageDTO);
+  }
+
+  public List<CampaignVolunteer> listVolunteersInRange(Long campaignId, ManyReferencesDTO dto) {
+    return repository.listVolunteersInRange(campaignId, dto.getData());
   }
 }

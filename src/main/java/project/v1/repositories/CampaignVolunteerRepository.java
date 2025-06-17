@@ -1,6 +1,7 @@
 package project.v1.repositories;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
@@ -35,5 +36,9 @@ public class CampaignVolunteerRepository implements PanacheRepository<CampaignVo
     builder.currentPage(pageDTO.getOneBasePage());
 
     return builder.build();
+  }
+
+  public List<CampaignVolunteer> listVolunteersInRange(Long campaignId, List<Long> ids) {
+    return find("campaign.id = ?1 AND id IN ?2 AND isAccepted = false", campaignId, ids).list();
   }
 }
