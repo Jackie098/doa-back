@@ -36,6 +36,7 @@ public class CampaignVolunteerRepository implements PanacheRepository<CampaignVo
     builder.currentPage(pageDTO.getOneBasePage());
 
     return builder.build();
+    return new Pageable<CampaignVolunteer>(query, pageDTO.getOneBasePage());
   }
 
   public List<CampaignVolunteer> listVolunteersInRange(Long campaignId, List<Long> ids) {
