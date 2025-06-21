@@ -189,12 +189,10 @@ public class AgentService {
     Set<Long> foundIds = volunteers.stream()
         .map(cv -> cv.getId())
         .collect(Collectors.toSet());
-    System.out.println("foundIds -> " + foundIds);
 
     List<Long> notFound = dto.getData().stream()
         .filter(id -> !foundIds.contains(id))
         .toList();
-    System.out.println("NotFound -> " + notFound);
 
     if (!notFound.isEmpty()) {
       throw new BadRequestException(MessageErrorEnum.VOLUNTEERS_DONT_BELONGS_CAMPAIGN.getMessage());

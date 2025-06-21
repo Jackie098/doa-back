@@ -36,4 +36,8 @@ public class CampaignVolunteerService {
   public List<CampaignVolunteer> listVolunteersInRange(Long campaignId, ManyReferencesDTO dto) {
     return repository.listVolunteersInRange(campaignId, dto.getData());
   }
+
+  public Pageable<CampaignVolunteer> listCampaignsByVolunteer(Long userId, Boolean isAccepted, PageDTO pagination) {
+    return repository.listCampaignsByVolunteer(userId, isAccepted, pagination);
+  }
 }

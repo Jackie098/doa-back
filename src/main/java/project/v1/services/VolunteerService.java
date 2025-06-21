@@ -3,11 +3,16 @@ package project.v1.services;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import project.common.database.Pageable;
 import project.common.exceptions.MessageErrorEnum;
 import project.common.exceptions.customs.BusinessException;
+import project.common.mappers.CampaignVolunteerMapper;
 import project.common.mappers.UserMapper;
+import project.v1.dtos.campaignVolunteer.CampaignVolunteerExtDTO;
+import project.v1.dtos.common.PageDTO;
 import project.v1.dtos.volunteer.VolunteerCreateDTO;
 import project.v1.entities.Campaign;
+import project.v1.entities.CampaignVolunteer;
 import project.v1.entities.User;
 import project.v1.entities.enums.CampaignStatusEnum;
 
@@ -58,5 +63,13 @@ public class VolunteerService {
         .orElseThrow(() -> new BusinessException(MessageErrorEnum.USER_NOT_FOUND.getMessage(), 404));
 
     campaignVolunteerService.bind(campaign, user);
+  }
+
+  @Transactional
+  public Pageable<CampaignVolunteerExtDTO> listCampaigns(Long userId, Boolean isAccepted, PageDTO pagination) {
+    Pageable<CampaignVolunteer> campaignVolunteers = campaignVolunteerService.listCampaignsByVolunteer(userId,
+        isAccepted, pagination);
+
+    return CampaignVolunteerMapper.fromEntityToExtPageableDTO(campaignVolunteers);
   }
 }

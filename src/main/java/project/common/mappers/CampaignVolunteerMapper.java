@@ -3,7 +3,9 @@ package project.common.mappers;
 import java.util.List;
 
 import project.common.database.Pageable;
+import project.v1.dtos.campaign.CampaignDTO;
 import project.v1.dtos.campaignVolunteer.CampaignVolunteerDTO;
+import project.v1.dtos.campaignVolunteer.CampaignVolunteerExtDTO;
 import project.v1.dtos.user.UserExtMinDTO;
 import project.v1.entities.Campaign;
 import project.v1.entities.CampaignVolunteer;
@@ -21,6 +23,19 @@ public class CampaignVolunteerMapper {
         .build();
   }
 
+  public static CampaignVolunteerExtDTO fromEntityToExtDTO(CampaignVolunteer data) {
+    UserExtMinDTO userDto = UserMapper.fromEntityToExtMinimal(data.getUser());
+    CampaignDTO campaignDto = CampaignMapper.fromEntityToCampaignDTO(data.getCampaign());
+
+    return CampaignVolunteerExtDTO.builder()
+        .id(data.getId())
+        .isAccepted(data.getIsAccepted())
+        .user(userDto)
+        .campaign(campaignDto)
+        .createdAt(data.getCreatedAt())
+        .build();
+  }
+
   public static CampaignVolunteer fromRelatedToEntity(Campaign campaign, User user) {
     return CampaignVolunteer.builder()
         .campaign(campaign)
@@ -34,6 +49,21 @@ public class CampaignVolunteerMapper {
     }).toList();
 
     Pageable.PageableBuilder<CampaignVolunteerDTO> builder = Pageable.builder();
+    builder.data(dto);
+    builder.pageSize(data.getPageSize());
+    builder.totalPages(data.getTotalPages());
+    builder.totalElements(data.getTotalElements());
+    builder.currentPage(data.getCurrentPage());
+
+    return builder.build();
+  }
+
+  public static Pageable<CampaignVolunteerExtDTO> fromEntityToExtPageableDTO(Pageable<CampaignVolunteer> data) {
+    List<CampaignVolunteerExtDTO> dto = data.getData().stream().map((item) -> {
+      return fromEntityToExtDTO(item);
+    }).toList();
+
+    Pageable.PageableBuilder<CampaignVolunteerExtDTO> builder = Pageable.builder();
     builder.data(dto);
     builder.pageSize(data.getPageSize());
     builder.totalPages(data.getTotalPages());
