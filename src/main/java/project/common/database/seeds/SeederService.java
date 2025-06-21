@@ -29,6 +29,8 @@ public class SeederService {
   private final Integer QUANTITY_VOLUNTEERS = 100;
   private final Integer QUANTITY_VOLUNTEERS_SPECIFIC_CAMPAIGN = 20;
   private final Integer VOLUNTEERS_SPECIFIC_CAMPAIGN_ID = 16;
+  private final Integer QUANTITY_CAMPAIGN_SPECIFIC_VOLUNTEER = 12;
+  private final Integer CAMPAIGNS_SPECIFIC_USER_ID = 31; // Id of a volunteer
 
   @Transactional
   public void seed() {
@@ -160,7 +162,29 @@ public class SeederService {
       user.setUpdatedAt(Instant.now());
       users.add(user);
 
-      Campaign campaign = campaigns.get(VOLUNTEERS_SPECIFIC_CAMPAIGN_ID);
+      Campaign campaign = campaigns.get(VOLUNTEERS_SPECIFIC_CAMPAIGN_ID - 1);
+
+      CampaignVolunteer campaignVolunteer = new CampaignVolunteer();
+      campaignVolunteer.setUser(user);
+      campaignVolunteer.setCampaign(campaign);
+      campaignVolunteer.setIsAccepted(i % 2 == 0);
+      campaignVolunteers.add(campaignVolunteer);
+    }
+
+    for (int i = 1; i <= QUANTITY_CAMPAIGN_SPECIFIC_VOLUNTEER; i++) {
+      User user = users.get(CAMPAIGNS_SPECIFIC_USER_ID - 1);
+
+      int randomIndex = ThreadLocalRandom.current().nextInt(0, campaigns.size());
+      Campaign campaign = campaigns.get(randomIndex);
+
+      boolean alreadyLinked = campaignVolunteers.stream()
+          .anyMatch(v -> v.getUser().getEmail().equals(user.getEmail()) &&
+              v.getCampaign().getSlug().equals(campaign.getSlug()));
+
+      if (alreadyLinked) {
+        i--;
+        continue;
+      }
 
       CampaignVolunteer campaignVolunteer = new CampaignVolunteer();
       campaignVolunteer.setUser(user);
