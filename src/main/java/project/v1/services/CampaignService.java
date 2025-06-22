@@ -72,7 +72,6 @@ public class CampaignService {
     Campaign campaign = CampaignMapper.fromDTO(dto, agent);
 
     campaignRepository.persistAndFlush(campaign);
-    System.out.println("created at-> " + campaign.getCreatedAt());
 
     return campaign;
   }

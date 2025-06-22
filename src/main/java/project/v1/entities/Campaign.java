@@ -65,4 +65,7 @@ public class Campaign extends BaseEntity {
 
   @OneToMany(mappedBy = "campaign")
   private List<CampaignVolunteer> volunteers;
+
+  @OneToMany(mappedBy = "campaign")
+  private List<CampaignDonation> donations;
 }

@@ -1,5 +1,7 @@
 package project.v1.resources;
 
+import java.net.URI;
+
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import jakarta.annotation.security.PermitAll;
@@ -21,6 +23,7 @@ import jakarta.ws.rs.core.SecurityContext;
 import jakarta.ws.rs.core.Response.Status;
 import project.common.database.Pageable;
 import project.common.requests.ResponseModel;
+import project.v1.dtos.campaignDonation.CampaignDonationCreateDTO;
 import project.v1.dtos.campaignVolunteer.CampaignVolunteerExtDTO;
 import project.v1.dtos.common.PageDTO;
 import project.v1.dtos.volunteer.VolunteerCreateDTO;
@@ -66,5 +69,16 @@ public class VolunteerResource {
     service.bindVolunteerCampaign(userId, campaignId);
 
     return Response.accepted().build();
+  }
+
+  @POST
+  @Path("/campaign/{id}/donation")
+  public Response createDonation(@Context SecurityContext ctx, @PathParam("id") Long campaignId,
+      @Valid CampaignDonationCreateDTO dto) {
+    Long userId = Long.parseLong(jwt.getClaim("id").toString());
+
+    service.createDonation(userId, campaignId, dto);
+
+    return Response.ok(ResponseModel.success()).build();
   }
 }
