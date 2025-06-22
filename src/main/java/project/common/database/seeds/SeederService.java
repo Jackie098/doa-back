@@ -12,11 +12,13 @@ import io.quarkus.runtime.Startup;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import project.v1.entities.Campaign;
+import project.v1.entities.CampaignDonation;
 import project.v1.entities.CampaignVolunteer;
 import project.v1.entities.CharityAgent;
 import project.v1.entities.Person;
 import project.v1.entities.User;
 import project.v1.entities.enums.AgentStatusEnum;
+import project.v1.entities.enums.CampaignDonationStatusEnum;
 import project.v1.entities.enums.CampaignStatusEnum;
 import project.v1.entities.enums.CampaignTypeEnum;
 import project.v1.entities.enums.UserTypeEnum;
@@ -25,16 +27,24 @@ import project.v1.entities.enums.UserTypeEnum;
 @ApplicationScoped
 public class SeederService {
   private final Integer QUANTITY_AGENTS = 30;
-  private final Integer QUANTITY_CAMPAIGNS_BY_ACTIVE_AGENT = 4;
+  private final Integer QUANTITY_CAMPAIGNS_BY_ACTIVE_AGENT = 8;
   private final Integer QUANTITY_VOLUNTEERS = 100;
   private final Integer QUANTITY_VOLUNTEERS_SPECIFIC_CAMPAIGN = 20;
+  private final Integer QUANTITY_DONATIONS_BY_CAMPAIGN = 5;
+  private final Integer QUANTITY_DONATIONS_SPECIFIC_CAMPAIGN = 20;
+
   private final Integer VOLUNTEERS_SPECIFIC_CAMPAIGN_ID = 16;
   private final Integer QUANTITY_CAMPAIGN_SPECIFIC_VOLUNTEER = 12;
   private final Integer CAMPAIGNS_SPECIFIC_USER_ID = 31; // Id of a volunteer
 
   @Transactional
   public void seed() {
-    if (User.count() > 0 || Person.count() > 0 || CharityAgent.count() > 0 || Campaign.count() > 0) {
+    if (User.count() > 0
+        || Person.count() > 0
+        || CharityAgent.count() > 0
+        || Campaign.count() > 0
+        || CampaignVolunteer.count() > 0
+        || CampaignDonation.count() > 0) {
       return;
     }
 
@@ -43,6 +53,7 @@ public class SeederService {
     List<CharityAgent> agents = new ArrayList<>();
     List<Campaign> campaigns = new ArrayList<>();
     List<CampaignVolunteer> campaignVolunteers = new ArrayList<>();
+    List<CampaignDonation> campaignDonations = new ArrayList<>();
 
     for (int i = 1; i <= QUANTITY_AGENTS; i++) {
       User user = new User();
@@ -82,19 +93,24 @@ public class SeederService {
           Instant dueDate;
           Instant finishedDate = null;
 
-          if (j <= 3) {
+          if (j <= percentageByInt(QUANTITY_CAMPAIGNS_BY_ACTIVE_AGENT, 30.0)) {
             status = CampaignStatusEnum.SCHEDULED;
             startDate = Instant.now().plus(7, ChronoUnit.DAYS);
             dueDate = startDate.plus(15, ChronoUnit.DAYS);
-          } else if (j <= 6) {
+          } else if (j <= percentageByInt(QUANTITY_CAMPAIGNS_BY_ACTIVE_AGENT, 60.0)) {
             status = CampaignStatusEnum.ACTIVE;
             startDate = Instant.now();
             dueDate = startDate.plus(15, ChronoUnit.DAYS);
-          } else if (j <= 7) {
+          } else if (j <= percentageByInt(QUANTITY_CAMPAIGNS_BY_ACTIVE_AGENT, 70.0)) {
             status = CampaignStatusEnum.CANCELED;
             startDate = Instant.now().minus(20, ChronoUnit.DAYS);
             dueDate = startDate.plus(10, ChronoUnit.DAYS);
             finishedDate = Instant.now().minus(5, ChronoUnit.DAYS);
+          } else if (j <= percentageByInt(QUANTITY_CAMPAIGNS_BY_ACTIVE_AGENT, 90.0)) {
+            status = CampaignStatusEnum.FINISHED;
+            startDate = Instant.now().minus(30, ChronoUnit.DAYS);
+            dueDate = Instant.now();
+            finishedDate = Instant.now().plus(5, ChronoUnit.MINUTES);
           } else {
             status = CampaignStatusEnum.PAUSED;
             startDate = Instant.now().minus(10, ChronoUnit.DAYS);
@@ -193,11 +209,56 @@ public class SeederService {
       campaignVolunteers.add(campaignVolunteer);
     }
 
+    for (int z = 0; z < campaigns.size(); z++) {
+      var campaign = campaigns.get(z);
+
+      var volunteers = campaignVolunteers.stream()
+          .filter((item) -> {
+            return item.getCampaign().getSlug().equals(campaign.getSlug());
+          })
+          .toList();
+
+      if (volunteers == null || volunteers.isEmpty()) {
+        continue;
+      }
+
+      int randomIndex = ThreadLocalRandom.current().nextInt(0, volunteers.size());
+      CampaignVolunteer volunteer = volunteers.get(randomIndex);
+
+      int maxTicketsByDonation = campaign.getTotalTickets() /
+          QUANTITY_DONATIONS_BY_CAMPAIGN;
+
+      int randomQuantity = ThreadLocalRandom.current().nextInt(1,
+          maxTicketsByDonation + 1);
+
+      for (int x = 1; x <= QUANTITY_DONATIONS_BY_CAMPAIGN; x++) {
+        CampaignDonation donation = new CampaignDonation();
+        donation.setCampaign(campaign);
+        donation.setVolunteer(volunteer);
+        donation.setDonorName("Doador " + x + " da campanha " + z);
+        donation.setDonorPhoneNumber("989945523" + x);
+        donation.setTicketQuantity((long) randomQuantity);
+
+        if (x <= percentageByInt(QUANTITY_DONATIONS_BY_CAMPAIGN, 40.0)) {
+          donation.setStatus(CampaignDonationStatusEnum.PENDING);
+        } else if (x <= percentageByInt(QUANTITY_DONATIONS_BY_CAMPAIGN, 70.0)) {
+          donation.setStatus(CampaignDonationStatusEnum.RECEIVED);
+        } else if (x <= percentageByInt(QUANTITY_DONATIONS_BY_CAMPAIGN, 90.0)) {
+          donation.setStatus(CampaignDonationStatusEnum.SENT);
+        } else {
+          donation.setStatus(CampaignDonationStatusEnum.VALIDATED);
+        }
+
+        campaignDonations.add(donation);
+      }
+    }
+
     User.persist(users);
     Person.persist(people);
     CharityAgent.persist(agents);
     Campaign.persist(campaigns);
     CampaignVolunteer.persist(campaignVolunteers);
+    CampaignDonation.persist(campaignDonations);
 
     saveAdmin();
   }
@@ -213,5 +274,10 @@ public class SeederService {
     user.setCreatedAt(Instant.now());
     user.setUpdatedAt(Instant.now());
     user.persist();
+  }
+
+  public Integer percentageByInt(Integer total, Double percentage) {
+    Double result = total * (percentage / 100);
+    return result.intValue();
   }
 }
