@@ -1,7 +1,5 @@
 package project.v1.resources;
 
-import java.net.URI;
-
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import jakarta.annotation.security.PermitAll;
@@ -19,8 +17,8 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.SecurityContext;
 import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.SecurityContext;
 import project.common.database.Pageable;
 import project.common.requests.ResponseModel;
 import project.v1.dtos.campaignDonation.CampaignDonationCreateDTO;

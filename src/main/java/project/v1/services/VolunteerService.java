@@ -1,5 +1,7 @@
 package project.v1.services;
 
+import java.util.List;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -77,7 +79,20 @@ public class VolunteerService {
     Pageable<CampaignVolunteer> campaignVolunteers = campaignVolunteerService.listCampaignsByVolunteer(userId,
         isAccepted, pagination);
 
-    return CampaignVolunteerMapper.fromEntityToExtPageableDTO(campaignVolunteers);
+    Pageable<CampaignVolunteerExtDTO> mapped = CampaignVolunteerMapper.fromEntityToExtPageableDTO(campaignVolunteers);
+
+    List<CampaignVolunteerExtDTO> removedCampaignDataNotAcceptedVolunteer = mapped.getData().stream().map((item) -> {
+      if (item.getIsAccepted().equals(false)) {
+        item.setCampaign(null);
+        return item;
+      } else {
+        return item;
+      }
+    }).toList();
+
+    mapped.setData(removedCampaignDataNotAcceptedVolunteer);
+
+    return mapped;
   }
 
   @Transactional

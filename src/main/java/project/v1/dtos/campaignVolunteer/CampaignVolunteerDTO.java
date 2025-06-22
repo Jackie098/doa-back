@@ -2,12 +2,12 @@ package project.v1.dtos.campaignVolunteer;
 
 import java.time.Instant;
 
-import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.SuperBuilder;
 import project.v1.dtos.user.UserExtMinDTO;
 
 @Data
-@Builder
+@SuperBuilder
 public class CampaignVolunteerDTO {
   private Long id;
   private Boolean isAccepted;
