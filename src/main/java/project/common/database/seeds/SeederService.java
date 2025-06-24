@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ThreadLocalRandom;
 
+import org.jboss.logging.Logger;
+
 import io.quarkus.runtime.Startup;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -31,11 +33,14 @@ public class SeederService {
   private final Integer QUANTITY_VOLUNTEERS = 100;
   private final Integer QUANTITY_VOLUNTEERS_SPECIFIC_CAMPAIGN = 20;
   private final Integer QUANTITY_DONATIONS_BY_CAMPAIGN = 5;
-  private final Integer QUANTITY_DONATIONS_SPECIFIC_CAMPAIGN = 20;
+  private final Integer QUANTITY_DONATIONS_SPECIFIC_CAMPAIGN = 200;
+  private final Integer QUANTITY_CAMPAIGN_SPECIFIC_VOLUNTEER = 12;
 
   private final Integer VOLUNTEERS_SPECIFIC_CAMPAIGN_ID = 16;
-  private final Integer QUANTITY_CAMPAIGN_SPECIFIC_VOLUNTEER = 12;
   private final Integer CAMPAIGNS_SPECIFIC_USER_ID = 31; // Id of a volunteer
+  private final Integer DONATIONS_SPECIFIC_CAMPAIGN_ID = 16;
+
+  private static final Logger LOG = Logger.getLogger(SeederService.class);
 
   @Transactional
   public void seed() {
@@ -225,6 +230,10 @@ public class SeederService {
       int randomIndex = ThreadLocalRandom.current().nextInt(0, volunteers.size());
       CampaignVolunteer volunteer = volunteers.get(randomIndex);
 
+      if (volunteer.getIsAccepted().equals(false)) {
+        volunteer.setIsAccepted(true);
+      }
+
       int maxTicketsByDonation = campaign.getTotalTickets() /
           QUANTITY_DONATIONS_BY_CAMPAIGN;
 
@@ -253,6 +262,50 @@ public class SeederService {
       }
     }
 
+    try {
+      Campaign campaign = campaigns.get(DONATIONS_SPECIFIC_CAMPAIGN_ID - 1);
+
+      List<CampaignVolunteer> volunteers = campaignVolunteers.stream()
+          .filter((item) -> {
+            return item.getCampaign().getSlug().equals(campaign.getSlug());
+          })
+          .toList();
+
+      if (volunteers == null || volunteers.isEmpty()) {
+        throw new Exception("Esta campanha não tem voluntários!");
+      }
+
+      CampaignVolunteer volunteer = getRandomActiveVolunteer(volunteers);
+
+      int maxTicketsByDonation = campaign.getTotalTickets() /
+          QUANTITY_DONATIONS_SPECIFIC_CAMPAIGN;
+      int randomQuantity = ThreadLocalRandom.current().nextInt(1,
+          maxTicketsByDonation + 1);
+
+      for (int x = 1; x <= QUANTITY_DONATIONS_SPECIFIC_CAMPAIGN; x++) {
+        CampaignDonation donation = new CampaignDonation();
+        donation.setCampaign(campaign);
+        donation.setVolunteer(volunteer);
+        donation.setDonorName("Doador " + x + " da campanha " + DONATIONS_SPECIFIC_CAMPAIGN_ID);
+        donation.setDonorPhoneNumber("989945523" + x);
+        donation.setTicketQuantity((long) randomQuantity);
+
+        if (x <= percentageByInt(QUANTITY_DONATIONS_SPECIFIC_CAMPAIGN, 40.0)) {
+          donation.setStatus(CampaignDonationStatusEnum.PENDING);
+        } else if (x <= percentageByInt(QUANTITY_DONATIONS_SPECIFIC_CAMPAIGN, 70.0)) {
+          donation.setStatus(CampaignDonationStatusEnum.RECEIVED);
+        } else if (x <= percentageByInt(QUANTITY_DONATIONS_SPECIFIC_CAMPAIGN, 90.0)) {
+          donation.setStatus(CampaignDonationStatusEnum.SENT);
+        } else {
+          donation.setStatus(CampaignDonationStatusEnum.VALIDATED);
+        }
+
+        campaignDonations.add(donation);
+      }
+    } catch (Exception e) {
+      LOG.error(e);
+    }
+
     User.persist(users);
     Person.persist(people);
     CharityAgent.persist(agents);
@@ -279,5 +332,16 @@ public class SeederService {
   public Integer percentageByInt(Integer total, Double percentage) {
     Double result = total * (percentage / 100);
     return result.intValue();
+  }
+
+  public CampaignVolunteer getRandomActiveVolunteer(List<CampaignVolunteer> volunteers) {
+    int randomIndex = ThreadLocalRandom.current().nextInt(0, volunteers.size());
+    CampaignVolunteer volunteer = volunteers.get(randomIndex);
+
+    if (volunteer.getIsAccepted().equals(false)) {
+      getRandomActiveVolunteer(volunteers);
+    }
+
+    return volunteer;
   }
 }
