@@ -19,6 +19,7 @@ import project.v1.dtos.common.PageDTO;
 import project.v1.dtos.volunteer.VolunteerCreateDTO;
 import project.v1.entities.Campaign;
 import project.v1.entities.CampaignDonation;
+import project.v1.entities.CampaignMetrics;
 import project.v1.entities.CampaignVolunteer;
 import project.v1.entities.User;
 import project.v1.entities.enums.CampaignStatusEnum;
@@ -33,6 +34,8 @@ public class VolunteerService {
   private CampaignVolunteerService campaignVolunteerService;
   @Inject
   private CampaignDonationService campaignDonationService;
+  @Inject
+  private CampaignMetricsService campaignMetricsService;
 
   @Transactional
   public void create(VolunteerCreateDTO dto) {
@@ -104,7 +107,17 @@ public class VolunteerService {
       throw new BusinessException(MessageErrorEnum.CAMPAIGN_NOT_ACTIVE_DOESNT_RECEIVE_DONATIONS.getMessage(), 400);
     }
 
-    // TODO: Add validation if has availiable tickets yet
+    CampaignMetrics metrics = campaignMetricsService.findByCampaignId(campaignId)
+        .orElseThrow(() -> new NotFoundException(MessageErrorEnum.CAMPAIGN_METRICS_NOT_FOUND.getMessage()));
+
+    if (metrics.getTicketsAvailable().equals(0)) {
+      throw new BusinessException(MessageErrorEnum.CAMPAIGN_METRICS_NO_TICKETS.getMessage(), 400);
+    }
+
+    if (metrics.getTicketsAvailable().longValue() < dto.getTicketQuantity()) {
+      throw new BusinessException(MessageErrorEnum.CAMPAIGN_METRICS_REQUESTED_TICKET_LESSER_AVAILABLE.getMessage(),
+          400);
+    }
 
     CampaignVolunteer volunteer = campaignVolunteerService.findBindByUser(userId, campaignId)
         .orElseThrow(() -> new NotFoundException(MessageErrorEnum.CAMPAIGN_VOLUNTEER_BIND_NOT_EXISTS.getMessage()));

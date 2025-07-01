@@ -47,6 +47,11 @@ public enum MessageErrorEnum {
   CAMPAIGN_NOT_ACTIVE_DOESNT_RECEIVE_DONATIONS(
       "A campanha não pode receber novas doações pois não está ativa no momento."),
 
+  CAMPAIGN_METRICS_NOT_FOUND("Não foi encontrado as métricas para esta campanha."),
+  CAMPAIGN_METRICS_REQUESTED_TICKET_LESSER_AVAILABLE(
+      "A quantidade de tickets disponíveis é menor do que o solicitado."),
+  CAMPAIGN_METRICS_NO_TICKETS("A quantidade de tickets disponíveis é menor do que o solicitado."),
+
   VOLUNTEERS_DONT_BELONGS_CAMPAIGN("Usuários não encontrados, não vinculados à esta campanha ou já foram aceitos."),
   VOLUNTEER_NO_ACCEPTED_CANT_ADD_NEW_DONATION(
       "O voluntário não pode inserir uma nova doação pois ainda não foi aceito na campanha.");
