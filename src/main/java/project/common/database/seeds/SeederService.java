@@ -216,6 +216,11 @@ public class SeederService {
 
     for (int z = 0; z < campaigns.size(); z++) {
       var campaign = campaigns.get(z);
+      var campaignSpecific = campaigns.get(DONATIONS_SPECIFIC_CAMPAIGN_ID - 1);
+
+      if (campaignSpecific.getSlug() == campaign.getSlug()) {
+        continue;
+      }
 
       var volunteers = campaignVolunteers.stream()
           .filter((item) -> {
@@ -237,15 +242,16 @@ public class SeederService {
       int maxTicketsByDonation = campaign.getTotalTickets() /
           QUANTITY_DONATIONS_BY_CAMPAIGN;
 
-      int randomQuantity = ThreadLocalRandom.current().nextInt(1,
-          maxTicketsByDonation + 1);
-
       for (int x = 1; x <= QUANTITY_DONATIONS_BY_CAMPAIGN; x++) {
         CampaignDonation donation = new CampaignDonation();
         donation.setCampaign(campaign);
         donation.setVolunteer(volunteer);
         donation.setDonorName("Doador " + x + " da campanha " + z);
         donation.setDonorPhoneNumber("989945523" + x);
+
+        int randomQuantity = ThreadLocalRandom.current().nextInt(1,
+            maxTicketsByDonation + 1);
+
         donation.setTicketQuantity((long) randomQuantity);
 
         if (x <= percentageByInt(QUANTITY_DONATIONS_BY_CAMPAIGN, 40.0)) {
@@ -279,8 +285,6 @@ public class SeederService {
 
       int maxTicketsByDonation = campaign.getTotalTickets() /
           QUANTITY_DONATIONS_SPECIFIC_CAMPAIGN;
-      int randomQuantity = ThreadLocalRandom.current().nextInt(1,
-          maxTicketsByDonation + 1);
 
       for (int x = 1; x <= QUANTITY_DONATIONS_SPECIFIC_CAMPAIGN; x++) {
         CampaignDonation donation = new CampaignDonation();
@@ -288,6 +292,9 @@ public class SeederService {
         donation.setVolunteer(volunteer);
         donation.setDonorName("Doador " + x + " da campanha " + DONATIONS_SPECIFIC_CAMPAIGN_ID);
         donation.setDonorPhoneNumber("989945523" + x);
+
+        int randomQuantity = ThreadLocalRandom.current().nextInt(1,
+            maxTicketsByDonation + 1);
         donation.setTicketQuantity((long) randomQuantity);
 
         if (x <= percentageByInt(QUANTITY_DONATIONS_SPECIFIC_CAMPAIGN, 40.0)) {
