@@ -39,6 +39,7 @@ public class SeederService {
   private final Integer VOLUNTEERS_SPECIFIC_CAMPAIGN_ID = 16;
   private final Integer CAMPAIGNS_SPECIFIC_USER_ID = 31; // Id of a volunteer
   private final Integer DONATIONS_SPECIFIC_CAMPAIGN_ID = 16;
+  private final Boolean IS_DONATIONS_RANDOMIZED = false;
 
   private static final Logger LOG = Logger.getLogger(SeederService.class);
 
@@ -254,14 +255,26 @@ public class SeederService {
 
         donation.setTicketQuantity((long) randomQuantity);
 
-        if (x <= percentageByInt(QUANTITY_DONATIONS_BY_CAMPAIGN, 40.0)) {
-          donation.setStatus(CampaignDonationStatusEnum.PENDING);
-        } else if (x <= percentageByInt(QUANTITY_DONATIONS_BY_CAMPAIGN, 70.0)) {
-          donation.setStatus(CampaignDonationStatusEnum.RECEIVED);
-        } else if (x <= percentageByInt(QUANTITY_DONATIONS_BY_CAMPAIGN, 90.0)) {
-          donation.setStatus(CampaignDonationStatusEnum.SENT);
+        boolean isDonation = ThreadLocalRandom.current().nextBoolean();
+        donation.setIsDonation(isDonation);
+
+        if (IS_DONATIONS_RANDOMIZED) {
+          double rnd = ThreadLocalRandom.current().nextDouble();
+          if (rnd < 0.30) {
+            donation.setStatus(CampaignDonationStatusEnum.PENDING);
+          } else if (rnd < 0.60) {
+            donation.setStatus(CampaignDonationStatusEnum.RECEIVED);
+          } else if (rnd < 0.70) {
+            donation.setStatus(CampaignDonationStatusEnum.SENT);
+          } else if (rnd < 0.85) {
+            donation.setStatus(CampaignDonationStatusEnum.VALIDATED);
+          } else {
+            donation.setStatus(CampaignDonationStatusEnum.REFUSED);
+          }
         } else {
-          donation.setStatus(CampaignDonationStatusEnum.VALIDATED);
+          CampaignDonationStatusEnum[] allStatus = CampaignDonationStatusEnum.values();
+          CampaignDonationStatusEnum randomStatus = allStatus[ThreadLocalRandom.current().nextInt(allStatus.length)];
+          donation.setStatus(randomStatus);
         }
 
         campaignDonations.add(donation);
@@ -297,14 +310,26 @@ public class SeederService {
             maxTicketsByDonation + 1);
         donation.setTicketQuantity((long) randomQuantity);
 
-        if (x <= percentageByInt(QUANTITY_DONATIONS_SPECIFIC_CAMPAIGN, 40.0)) {
-          donation.setStatus(CampaignDonationStatusEnum.PENDING);
-        } else if (x <= percentageByInt(QUANTITY_DONATIONS_SPECIFIC_CAMPAIGN, 70.0)) {
-          donation.setStatus(CampaignDonationStatusEnum.RECEIVED);
-        } else if (x <= percentageByInt(QUANTITY_DONATIONS_SPECIFIC_CAMPAIGN, 90.0)) {
-          donation.setStatus(CampaignDonationStatusEnum.SENT);
+        boolean isDonation = ThreadLocalRandom.current().nextBoolean();
+        donation.setIsDonation(isDonation);
+
+        if (IS_DONATIONS_RANDOMIZED) {
+          double rnd = ThreadLocalRandom.current().nextDouble();
+          if (rnd < 0.30) {
+            donation.setStatus(CampaignDonationStatusEnum.PENDING);
+          } else if (rnd < 0.60) {
+            donation.setStatus(CampaignDonationStatusEnum.RECEIVED);
+          } else if (rnd < 0.70) {
+            donation.setStatus(CampaignDonationStatusEnum.SENT);
+          } else if (rnd < 0.85) {
+            donation.setStatus(CampaignDonationStatusEnum.VALIDATED);
+          } else {
+            donation.setStatus(CampaignDonationStatusEnum.REFUSED);
+          }
         } else {
-          donation.setStatus(CampaignDonationStatusEnum.VALIDATED);
+          CampaignDonationStatusEnum[] allStatus = CampaignDonationStatusEnum.values();
+          CampaignDonationStatusEnum randomStatus = allStatus[ThreadLocalRandom.current().nextInt(allStatus.length)];
+          donation.setStatus(randomStatus);
         }
 
         campaignDonations.add(donation);
