@@ -33,7 +33,8 @@ public enum MessageErrorEnum {
   CAMPAIGN_UPDATE_WITHOUT_DATA("Não é possível atualizar uma campanha com nenhum valor novo."),
   CAMPAIGN_UPDATE_DUE_DATE_TO_REACTIVATE(
       "Você precisa atualizar a data de vencimento da campanha para poder reativá-la."),
-  CAMPAIGN_UPDATE_TICKET_PRICE_BEFORE_START("Somente é possível alterar o valor do ticket antes da campanha começar."),
+  CAMPAIGN_UPDATE_TICKET_PRICE_BEFORE_START(
+      "Somente é possível alterar o valor do ticket antes da campanha começar."),
   CAMPAIGN_UPDATE_TOTAL_TICKETS_STATUS_INACTIVE(
       "Não é possível alterar o total de tickets pois a campanha está cancelada ou finalizada."),
   SCHEDULED_CAMPAIGN_UPDATE_START_DATE(
@@ -46,6 +47,11 @@ public enum MessageErrorEnum {
 
   CAMPAIGN_NOT_ACTIVE_DOESNT_RECEIVE_DONATIONS(
       "A campanha não pode receber novas doações pois não está ativa no momento."),
+
+  CAMPAIGN_METRICS_NOT_FOUND("Não foi encontrado as métricas para esta campanha."),
+  CAMPAIGN_METRICS_REQUESTED_TICKET_LESSER_AVAILABLE(
+      "A quantidade de tickets disponíveis é menor do que o solicitado."),
+  CAMPAIGN_METRICS_NO_TICKETS("A quantidade de tickets disponíveis é menor do que o solicitado."),
 
   VOLUNTEERS_DONT_BELONGS_CAMPAIGN("Usuários não encontrados, não vinculados à esta campanha ou já foram aceitos."),
   VOLUNTEER_NO_ACCEPTED_CANT_ADD_NEW_DONATION(
