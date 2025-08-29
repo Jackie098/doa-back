@@ -51,7 +51,7 @@ public enum MessageErrorEnum {
   CAMPAIGN_METRICS_NOT_FOUND("Não foi encontrado as métricas para esta campanha."),
   CAMPAIGN_METRICS_REQUESTED_TICKET_LESSER_AVAILABLE(
       "A quantidade de tickets disponíveis é menor do que o solicitado."),
-  CAMPAIGN_METRICS_NO_TICKETS("A quantidade de tickets disponíveis é menor do que o solicitado."),
+  CAMPAIGN_METRICS_NO_TICKETS("Não há mais tickets disponíveis para esta campanha."),
 
   VOLUNTEERS_DONT_BELONGS_CAMPAIGN("Usuários não encontrados, não vinculados à esta campanha ou já foram aceitos."),
   VOLUNTEER_NO_ACCEPTED_CANT_ADD_NEW_DONATION(

@@ -44,37 +44,37 @@ public class CampaignMetrics {
   @Transient
   public BigDecimal amountTicketsValidated;
   @Transient
-  public BigDecimal amountTicketsRefused;
-  @Transient
   public BigDecimal amountTicketsGoal;
 
   @Transient
-  public BigDecimal amountTicketsPendingPercentage;
+  public BigDecimal tckPendingByCampGoal;
   @Transient
-  public BigDecimal amountTicketsReceivedPercentage;
+  public BigDecimal tckReceivedByCampGoal;
   @Transient
-  public BigDecimal amountTicketsValidatedPercentage;
+  public BigDecimal tckValidatedByCampGoal;
+  @Transient
+  public BigDecimal tckDonationByTotalCollected;
 
   @PostLoad
   private void afterLoad() {
-    BigDecimal ONE_HUNDRED = new BigDecimal(100);
-
-    this.ticketsPickUp = ticketsSold.subtract(ticketsDonation);
+    this.ticketsPickUp = ticketsSold.subtract(ticketsDonation); // ok
 
     this.amountTicketsSold = ticketPrice.multiply(ticketsSold);
     this.amountTicketsPending = ticketPrice.multiply(ticketsPending);
     this.amountTicketsReceived = ticketPrice.multiply(ticketsReceived);
     this.amountTicketsSent = ticketPrice.multiply(ticketsSent);
     this.amountTicketsValidated = ticketPrice.multiply(ticketsValidated);
-    this.amountTicketsRefused = ticketPrice.multiply(ticketsRefused);
     this.amountTicketsGoal = ticketPrice.multiply(totalTickets);
 
-    this.amountTicketsPendingPercentage = ticketsPending.multiply(ONE_HUNDRED)
-        .divide(totalTickets.multiply(ONE_HUNDRED)); // (ticketsPending * 100) / (totalTickets * 100); // retorna em
-                                                     // decimal
-    this.amountTicketsReceivedPercentage = ticketsReceived.multiply(ONE_HUNDRED)
-        .divide(totalTickets.multiply(ONE_HUNDRED));
-    this.amountTicketsValidatedPercentage = ticketsValidated.multiply(ONE_HUNDRED)
-        .divide(totalTickets.multiply(ONE_HUNDRED));
+    // percentage based on campaign goal - totalTickets
+    this.tckPendingByCampGoal = ticketsPending
+        .divide(totalTickets);
+    this.tckReceivedByCampGoal = ticketsReceived
+        .divide(totalTickets);
+    this.tckValidatedByCampGoal = ticketsValidated
+        .divide(totalTickets);
+
+    // percentage based on total collection - ticketsSold
+    this.tckDonationByTotalCollected = ticketsDonation.divide(ticketsSold);
   }
 }

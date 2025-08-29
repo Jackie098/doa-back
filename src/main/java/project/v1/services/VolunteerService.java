@@ -109,7 +109,7 @@ public class VolunteerService {
 
     CampaignMetrics metrics = campaignMetricsService.findByCampaignId(campaignId)
         .orElseThrow(() -> new NotFoundException(MessageErrorEnum.CAMPAIGN_METRICS_NOT_FOUND.getMessage()));
-
+    System.out.println(metrics.toString());
     if (metrics.getTicketsAvailable().equals(0)) {
       throw new BusinessException(MessageErrorEnum.CAMPAIGN_METRICS_NO_TICKETS.getMessage(), 400);
     }
