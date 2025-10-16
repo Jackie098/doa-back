@@ -20,7 +20,7 @@ import project.v1.entities.views.CampaignMetricsView;
 @Table(name = "campaign_metrics")
 @Immutable
 @View(query = CampaignMetricsView.QUERY)
-@Synchronize({"campaign_donations", "campaigns"})
+@Synchronize({ "campaign_donations", "campaigns" })
 public class CampaignMetrics {
   @Id
   private Long campaignId;

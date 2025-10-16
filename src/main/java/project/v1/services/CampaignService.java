@@ -1,5 +1,6 @@
 package project.v1.services;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Optional;
 
@@ -16,6 +17,7 @@ import project.v1.dtos.campaign.CampaignCreateDTO;
 import project.v1.dtos.campaign.CampaignUpdateDTO;
 import project.v1.dtos.common.PageDTO;
 import project.v1.entities.Campaign;
+import project.v1.entities.CampaignMetrics;
 import project.v1.entities.CharityAgent;
 import project.v1.entities.enums.CampaignStatusEnum;
 import project.v1.repositories.CampaignRepository;
@@ -24,6 +26,9 @@ import project.v1.repositories.CampaignRepository;
 public class CampaignService {
   @Inject
   private CampaignRepository campaignRepository;
+
+  @Inject
+  private CampaignMetricsService campaignMetricsService;
 
   @Inject
   private AgentService agentService;
@@ -88,23 +93,31 @@ public class CampaignService {
       throw new NotFoundException(MessageErrorEnum.CAMPAIGN_NOT_FOUND.getMessage());
     }
 
+    if (campaign.getStatus() == CampaignStatusEnum.CANCELED
+        || campaign.getStatus() == CampaignStatusEnum.FINISHED) {
+      throw new BusinessException("Não é possível alterar os dados de uma campanha finalizada ou cancelada.", 400);
+    }
+
     if (dto.getTicketPrice() != null && campaign.getStatus() != CampaignStatusEnum.SCHEDULED) {
       throw new BusinessException(MessageErrorEnum.CAMPAIGN_UPDATE_TICKET_PRICE_BEFORE_START.getMessage(), 400);
     }
 
-    if (campaign.getStatus() == CampaignStatusEnum.CANCELED
-        || campaign.getStatus() == CampaignStatusEnum.FINISHED) {
-
+    if (dto.getTotalTickets() != null) {
       Integer newTotal = dto.getTotalTickets() != null ? dto.getTotalTickets() : 0;
       Integer currentTotal = campaign.getTotalTickets() != null ? campaign.getTotalTickets() : 0;
-      // TODO: Alterar totalTickets pra menos somente se ainda há tickets disponíveis
-      if (dto.getTotalTickets() != null && newTotal < currentTotal) {
-        throw new BusinessException("Diminuir a quantidade total de tickets duma campanha ainda não é possível", 501);
-      }
 
-      if (newTotal > currentTotal) {
-        throw new BusinessException(
-            MessageErrorEnum.CAMPAIGN_UPDATE_TOTAL_TICKETS_STATUS_INACTIVE.getMessage(), 400);
+      if (newTotal < currentTotal) {
+        CampaignMetrics metrics = campaignMetricsService.findByCampaignId(dto.getId())
+            .orElseThrow(() -> new NotFoundException(MessageErrorEnum.CAMPAIGN_METRICS_NOT_FOUND.getMessage()));
+
+        BigDecimal nonDonatedTicketsSold = metrics.getTotalTickets().subtract(metrics.getTicketsAvailable());
+
+        if (nonDonatedTicketsSold.intValue() > dto.getTotalTickets()) {
+          throw new BusinessException(
+              "O novo valor total não pode ser menor do que a quantidade de tickets já vendidos. O valor mínimo permitido é: "
+                  + nonDonatedTicketsSold + " tickets.",
+              400);
+        }
       }
     }
 
