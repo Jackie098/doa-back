@@ -1,6 +1,7 @@
 package project.v1.entities;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Synchronize;
@@ -73,13 +74,13 @@ public class CampaignMetrics {
 
     // percentage based on campaign goal - totalTickets
     this.tckPendingByCampGoal = ticketsPending
-        .divide(totalTickets);
+        .divide(totalTickets, 2, RoundingMode.FLOOR);
     this.tckReceivedByCampGoal = ticketsReceived
-        .divide(totalTickets);
+        .divide(totalTickets, 2, RoundingMode.FLOOR);
     this.tckValidatedByCampGoal = ticketsValidated
-        .divide(totalTickets);
+        .divide(totalTickets, 2, RoundingMode.FLOOR);
 
     // percentage based on total collection - ticketsSold
-    this.tckDonationByTotalCollected = ticketsDonation.divide(ticketsSold);
+    this.tckDonationByTotalCollected = ticketsDonation.divide(ticketsSold, 2, RoundingMode.FLOOR);
   }
 }
