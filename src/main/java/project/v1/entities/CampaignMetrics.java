@@ -22,43 +22,43 @@ import project.v1.entities.views.CampaignMetricsView;
 @Synchronize({"campaign_donations", "campaigns"})
 public class CampaignMetrics {
   @Id
-  public Long campaignId;
-  public BigDecimal ticketPrice;
-  public BigDecimal totalTickets; // int
-  public BigDecimal ticketsSold; // int
-  public BigDecimal ticketsAvailable; // int
+  private Long campaignId;
+  private BigDecimal ticketPrice;
+  private BigDecimal totalTickets; // int
+  private BigDecimal ticketsSold; // int
+  private BigDecimal ticketsAvailable; // int
 
-  public BigDecimal ticketsDonation; // Doação sem retirada //int
+  private BigDecimal ticketsDonation; // Doação sem retirada //int
 
-  public BigDecimal ticketsPending; // int
-  public BigDecimal ticketsReceived; // int
-  public BigDecimal ticketsSent; // int
-  public BigDecimal ticketsValidated; // int
-  public BigDecimal ticketsRefused; // int
-
-  @Transient
-  public BigDecimal ticketsPickUp; // Retirada no local //int
-  @Transient
-  public BigDecimal amountTicketsSold;
-  @Transient
-  public BigDecimal amountTicketsPending;
-  @Transient
-  public BigDecimal amountTicketsReceived;
-  @Transient
-  public BigDecimal amountTicketsSent;
-  @Transient
-  public BigDecimal amountTicketsValidated;
-  @Transient
-  public BigDecimal amountTicketsGoal;
+  private BigDecimal ticketsPending; // int
+  private BigDecimal ticketsReceived; // int
+  private BigDecimal ticketsSent; // int
+  private BigDecimal ticketsValidated; // int
+  private BigDecimal ticketsRefused; // int
 
   @Transient
-  public BigDecimal tckPendingByCampGoal;
+  private BigDecimal ticketsPickUp; // Retirada no local //int
   @Transient
-  public BigDecimal tckReceivedByCampGoal;
+  private BigDecimal amountTicketsSold;
   @Transient
-  public BigDecimal tckValidatedByCampGoal;
+  private BigDecimal amountTicketsPending;
   @Transient
-  public BigDecimal tckDonationByTotalCollected;
+  private BigDecimal amountTicketsReceived;
+  @Transient
+  private BigDecimal amountTicketsSent;
+  @Transient
+  private BigDecimal amountTicketsValidated;
+  @Transient
+  private BigDecimal amountTicketsGoal;
+
+  @Transient
+  private BigDecimal tckPendingByCampGoal;
+  @Transient
+  private BigDecimal tckReceivedByCampGoal;
+  @Transient
+  private BigDecimal tckValidatedByCampGoal;
+  @Transient
+  private BigDecimal tckDonationByTotalCollected;
 
   @PostLoad
   private void afterLoad() {
