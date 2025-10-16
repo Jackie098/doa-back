@@ -3,6 +3,8 @@ package project.v1.entities;
 import java.math.BigDecimal;
 
 import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.Subselect;
+import org.hibernate.annotations.Synchronize;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -13,6 +15,9 @@ import lombok.Data;
 
 @Entity
 @Immutable
+// @Subselect("SELECT * FROM campaign_metrics")
+// @Synchronize({"campaign_metrics", "campaigns", "campaign_donations",
+// "campaign_volunteers"})
 @Table(name = "campaign_metrics")
 @Data
 public class CampaignMetrics {

@@ -2,12 +2,13 @@ databaseChangeLog:
   - changeSet:
       id: 1-create-campaign-metrics-view
       author: carlos
+      runOnChange: true
+      runAlways: true
       changes:
         - createView:
             viewName: campaign_metrics
             replaceIfExists: true
             selectQuery: |
-              CREATE VIEW campaign_metrics AS
               WITH donations_by_campaign AS (
                   SELECT cd.campaign_id, SUM(cd.ticket_quantity) AS tickets_donation
                   FROM campaign_donations cd
