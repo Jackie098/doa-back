@@ -3,6 +3,8 @@ package project.v1.entities;
 import java.math.BigDecimal;
 
 import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.Synchronize;
+import org.hibernate.annotations.View;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -10,11 +12,14 @@ import jakarta.persistence.PostLoad;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.Data;
+import project.v1.entities.views.CampaignMetricsView;
 
-@Entity
-@Immutable
-@Table(name = "campaign_metrics")
 @Data
+@Entity
+@Table(name = "campaign_metrics")
+@Immutable
+@View(query = CampaignMetricsView.QUERY)
+@Synchronize({"campaign_donations", "campaigns"})
 public class CampaignMetrics {
   @Id
   public Long campaignId;
