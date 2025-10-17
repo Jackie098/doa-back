@@ -17,8 +17,10 @@ import project.common.exceptions.customs.NotFoundException;
 import project.common.mappers.AgentMapper;
 import project.common.mappers.CampaignMapper;
 import project.common.mappers.CampaignVolunteerMapper;
+import project.common.utils.SlugUtils;
 import project.v1.dtos.agent.AgentCreateDTO;
 import project.v1.dtos.agent.AgentDTO;
+import project.v1.dtos.agent.AgentValidSlugDTO;
 import project.v1.dtos.campaign.CampaignCreateDTO;
 import project.v1.dtos.campaign.CampaignDTO;
 import project.v1.dtos.campaign.CampaignUpdateDTO;
@@ -46,6 +48,28 @@ public class AgentService {
 
   @Inject
   private AgentRepository agentRepository;
+
+  public AgentValidSlugDTO verifySlug(String slug) {    
+    slug = SlugUtils.cleanSlug(slug);
+    
+    Optional<CharityAgent> agentExists = agentRepository.find("slug = ?1", slug).firstResultOptional();
+
+    if (agentExists.isEmpty()) {
+      return AgentValidSlugDTO.builder().isAvailable(true).suggestedSlug(null).build();
+    }
+
+    String suggestedSlug = "";
+    while (true) {
+      suggestedSlug = SlugUtils.generateAgentSlug(slug);
+      Optional<CharityAgent> agentExistsSuggested = agentRepository.find("slug = ?1", suggestedSlug).firstResultOptional();
+
+      if (agentExistsSuggested.isEmpty()) {
+        break;
+      }
+    }
+
+    return AgentValidSlugDTO.builder().isAvailable(false).suggestedSlug(suggestedSlug).build();
+  }
 
   public Pageable<AgentDTO> listAgents(AgentStatusEnum status, PageDTO pageDTO) {
     Pageable<CharityAgent> result = agentRepository.list(status, pageDTO);
@@ -95,6 +119,7 @@ public class AgentService {
     var person = personService.create(dto.getResponsibleLegal());
 
     var agent = AgentMapper.fromDTO(dto, person, user);
+    agent.setSlug(SlugUtils.cleanSlug(dto.getSlug()));
 
     agentRepository.persistAndFlush(agent);
 

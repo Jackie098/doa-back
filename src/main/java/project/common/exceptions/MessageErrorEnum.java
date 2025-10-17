@@ -12,6 +12,7 @@ public enum MessageErrorEnum {
 
   AGENT_NOT_FOUND("Agente não encontrado!"),
   AGENT_ALREADY_EXISTS("Um agente de caridade já existe com estes dados."),
+  AGENT_SLUG_IS_REQUIRED("O slug é obrigatório."),
 
   SCHEDULED_CAMPAIGN_WITHOUT_START_DATE(
       "A data de início é obrigatória quando você não deseja iniciar a campanha agora."),

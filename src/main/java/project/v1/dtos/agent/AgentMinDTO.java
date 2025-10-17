@@ -13,4 +13,5 @@ public class AgentMinDTO {
   private Long id;
   private String name;
   private String document;
+  private String slug;
 }

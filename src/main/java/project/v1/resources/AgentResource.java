@@ -7,6 +7,7 @@ import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PATCH;
@@ -43,6 +44,16 @@ public class AgentResource {
 
   @Inject
   private AgentService service;
+
+  @GET
+  @Path("/slug/verify")
+  public Response verifySlug(@QueryParam("slug") @NotBlank String slug) {
+    var result = service.verifySlug(slug);
+    
+    var response = ResponseModel.success(Response.Status.OK.getStatusCode(), result);
+
+    return Response.ok(response).build();
+  }
 
   @POST
   @PermitAll

@@ -70,6 +70,7 @@ public class AgentMapper {
     return AgentMinDTO.builder()
         .id(agent.getId())
         .document(agent.getDocument())
+        .slug(agent.getSlug())
         .build();
   }
 }
