@@ -1,6 +1,7 @@
 package project.common.mappers;
 
 import project.v1.dtos.user.UserCreateDTO;
+import project.v1.dtos.user.UserDTO;
 import project.v1.dtos.user.UserExtMinDTO;
 import project.v1.dtos.user.UserMinDTO;
 import project.v1.dtos.volunteer.VolunteerCreateDTO;
@@ -16,6 +17,17 @@ public class UserMapper {
         .type(UserTypeEnum.valueOf(dto.getType().toUpperCase()))
         .phoneNumber(dto.getPhoneNumber())
         .name(dto.getName())
+        .build();
+  }
+
+  public static UserDTO fromEntityToDto(User user) {
+    return UserDTO.builder()
+        .id(user.getId())
+        .email(user.getEmail())
+        .name(user.getName())
+        .phoneNumber(user.getPhoneNumber())
+        .type(user.getType())
+        .createdAt(user.getCreatedAt())
         .build();
   }
 
