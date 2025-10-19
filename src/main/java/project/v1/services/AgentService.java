@@ -139,7 +139,7 @@ public class AgentService {
   }
 
   public Pageable<CampaignDTO> listCampaign(CampaignStatusEnum status, Long userId, PageDTO pageDTO) {
-    var result = campaignService.list(status, userId, pageDTO);
+    var result = campaignService.list(userId, pageDTO, status, false);
     var mapped = CampaignMapper.fromEntityToPageableCampaignDTO(result);
 
     return mapped;

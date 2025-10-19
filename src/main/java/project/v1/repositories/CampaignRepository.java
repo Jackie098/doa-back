@@ -12,7 +12,7 @@ import project.v1.entities.enums.CampaignStatusEnum;
 
 @ApplicationScoped
 public class CampaignRepository implements PanacheRepository<Campaign> {
-  public Pageable<Campaign> list(CampaignStatusEnum status, Long userId, PageDTO pageDTO) {
+  public Pageable<Campaign> list(Long userId, PageDTO pageDTO, CampaignStatusEnum status, Boolean metrics) {
     PanacheQuery<Campaign> query = null;
 
     if (status == null) {

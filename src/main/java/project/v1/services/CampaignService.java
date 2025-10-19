@@ -35,8 +35,8 @@ public class CampaignService {
   @Inject
   private AgentService agentService;
 
-  public Pageable<Campaign> list(CampaignStatusEnum status, Long userId, PageDTO pageDTO) {
-    return campaignRepository.list(status, userId, pageDTO);
+  public Pageable<Campaign> list(Long userId, PageDTO pageDTO, CampaignStatusEnum status, Boolean displayMetrics) {
+    return campaignRepository.list(userId, pageDTO, status, displayMetrics);
   }
 
   public Optional<Campaign> findById(Long campaignId) {
