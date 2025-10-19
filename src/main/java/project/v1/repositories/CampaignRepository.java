@@ -1,5 +1,7 @@
 package project.v1.repositories;
 
+import java.util.Optional;
+
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -22,5 +24,9 @@ public class CampaignRepository implements PanacheRepository<Campaign> {
     query.page(pageDTO.getPagination());
 
     return new Pageable<Campaign>(query, pageDTO.getOneBasePage());
+  }
+
+  public Optional<Campaign> verifySlugAvailability(String slug, Long agentId) {
+    return find("slug = ?1 AND agent.id = ?2", slug, agentId).firstResultOptional();
   }
 }

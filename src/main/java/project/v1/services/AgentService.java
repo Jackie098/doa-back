@@ -20,13 +20,13 @@ import project.common.mappers.CampaignVolunteerMapper;
 import project.common.utils.SlugUtils;
 import project.v1.dtos.agent.AgentCreateDTO;
 import project.v1.dtos.agent.AgentDTO;
-import project.v1.dtos.agent.AgentValidSlugDTO;
 import project.v1.dtos.campaign.CampaignCreateDTO;
 import project.v1.dtos.campaign.CampaignDTO;
 import project.v1.dtos.campaign.CampaignUpdateDTO;
 import project.v1.dtos.campaignVolunteer.CampaignVolunteerDTO;
 import project.v1.dtos.common.ManyReferencesDTO;
 import project.v1.dtos.common.PageDTO;
+import project.v1.dtos.common.ValidSlugDTO;
 import project.v1.entities.Campaign;
 import project.v1.entities.CampaignVolunteer;
 import project.v1.entities.CharityAgent;
@@ -49,13 +49,13 @@ public class AgentService {
   @Inject
   private AgentRepository agentRepository;
 
-  public AgentValidSlugDTO verifySlug(String slug) {    
+  public ValidSlugDTO verifySlug(String slug) {    
     slug = SlugUtils.cleanSlug(slug);
     
     Optional<CharityAgent> agentExists = agentRepository.find("slug = ?1", slug).firstResultOptional();
 
     if (agentExists.isEmpty()) {
-      return AgentValidSlugDTO.builder().isAvailable(true).suggestedSlug(null).build();
+      return ValidSlugDTO.builder().isAvailable(true).suggestedSlug(null).build();
     }
 
     String suggestedSlug = "";
@@ -68,7 +68,7 @@ public class AgentService {
       }
     }
 
-    return AgentValidSlugDTO.builder().isAvailable(false).suggestedSlug(suggestedSlug).build();
+    return ValidSlugDTO.builder().isAvailable(false).suggestedSlug(suggestedSlug).build();
   }
 
   public Pageable<AgentDTO> listAgents(AgentStatusEnum status, PageDTO pageDTO) {
@@ -145,6 +145,11 @@ public class AgentService {
     return mapped;
   }
 
+  @Transactional
+  public ValidSlugDTO verifyCampaignSlug(String slug, Long agentId) {
+    return campaignService.verifySlug(slug, agentId);
+  }
+  
   @Transactional
   public CampaignDTO createCampaign(CampaignCreateDTO dto) {
     Campaign campaign = campaignService.create(dto);

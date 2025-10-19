@@ -18,6 +18,7 @@ public enum MessageErrorEnum {
       "A data de início é obrigatória quando você não deseja iniciar a campanha agora."),
   SCHEDULED_CAMPAIGN_INVALID_START_DATE("A data de início não pode ser anterior a data atual"),
 
+  CAMPAIGN_SLUG_INVALID_FORMAT("O formato do slug da campanha é inválido."),
   CAMPAIGN_DUE_DATE_BEFORE_START_DATE("A data de encerramento não pode ser anterior a data de início da campanha"),
   CAMPAIGN_SLUG_ALREADY_EXISTS("O código utilizado já está vinculado a outra campanha."),
   CAMPAIGN_FINISH_ONLY_STATUS_ACTIVE("É possível finalizar somente uma campanha ativa."),

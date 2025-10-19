@@ -13,9 +13,11 @@ import project.common.exceptions.customs.BusinessException;
 import project.common.exceptions.customs.ConflictException;
 import project.common.exceptions.customs.NotFoundException;
 import project.common.mappers.CampaignMapper;
+import project.common.utils.SlugUtils;
 import project.v1.dtos.campaign.CampaignCreateDTO;
 import project.v1.dtos.campaign.CampaignUpdateDTO;
 import project.v1.dtos.common.PageDTO;
+import project.v1.dtos.common.ValidSlugDTO;
 import project.v1.entities.Campaign;
 import project.v1.entities.CampaignMetrics;
 import project.v1.entities.CharityAgent;
@@ -41,9 +43,14 @@ public class CampaignService {
     return campaignRepository.findByIdOptional(campaignId);
   }
 
-  public Boolean verifySlug(CampaignCreateDTO dto) {
-    return campaignRepository.find("slug = ?1 AND agent.id = ?2", dto.getSlug(), dto.getAgentId())
-        .firstResult() != null;
+  public ValidSlugDTO verifySlug(String slug, Long agentId) {
+    var isSlugAvailable = campaignRepository.verifySlugAvailability(slug, agentId).isEmpty();
+    if (isSlugAvailable) {
+      return ValidSlugDTO.builder().isAvailable(true).suggestedSlug("").build();
+    }
+
+    String suggestedSlug = SlugUtils.generateCampaignSlug(slug);
+    return ValidSlugDTO.builder().isAvailable(false).suggestedSlug(suggestedSlug).build();
   }
 
   public Campaign create(CampaignCreateDTO dto) {
@@ -63,7 +70,8 @@ public class CampaignService {
       throw new BusinessException(MessageErrorEnum.CAMPAIGN_DUE_DATE_BEFORE_START_DATE.getMessage(), 400);
     }
 
-    if (verifySlug(dto)) {
+    var slugUnavailable = campaignRepository.verifySlugAvailability(dto.getSlug(), dto.getAgentId()).isPresent();
+    if (slugUnavailable) {
       throw new ConflictException(MessageErrorEnum.CAMPAIGN_SLUG_ALREADY_EXISTS.getMessage());
     }
 
