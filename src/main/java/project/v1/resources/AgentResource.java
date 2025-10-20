@@ -1,5 +1,7 @@
 package project.v1.resources;
 
+import java.util.List;
+
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import jakarta.annotation.security.PermitAll;
@@ -24,10 +26,12 @@ import jakarta.ws.rs.core.SecurityContext;
 import jakarta.ws.rs.core.Response.Status;
 import project.common.database.Pageable;
 import project.common.requests.ResponseModel;
+import project.common.utils.ParseQueryParams;
 import project.v1.dtos.agent.AgentCreateDTO;
 import project.v1.dtos.campaign.CampaignCreateDTO;
 import project.v1.dtos.campaign.CampaignDTO;
 import project.v1.dtos.campaign.CampaignUpdateDTO;
+import project.v1.dtos.campaignMetrics.CampaignMetricsDTO;
 import project.v1.dtos.campaignVolunteer.CampaignVolunteerDTO;
 import project.v1.dtos.common.ManyReferencesDTO;
 import project.v1.dtos.common.PageDTO;
@@ -196,5 +200,17 @@ public class AgentResource {
     service.acceptVolunteers(userId, Long.parseLong(campaignId), dto);
 
     return Response.accepted().build();
+  }
+
+  @GET
+  @Path("/campaign/metrics/batch")
+  public Response batchCampaignMetrics(@Context SecurityContext ctx, @QueryParam("campaignIds") @NotBlank String campaignIdsStr, @QueryParam("page") Integer page, @QueryParam("size") Integer size) {
+    Long agentId = Long.parseLong(jwt.getClaim("id").toString());
+    List<Long> campaignIds = ParseQueryParams.validateAndParseCampaignIds(campaignIdsStr, 20);
+
+    Pageable<CampaignMetricsDTO> result = service.listCampaignMetricsInRange(agentId, campaignIds, PageDTO.of(page, size));
+    var response = ResponseModel.success(Response.Status.OK.getStatusCode(), result);
+
+    return Response.ok(response).build();
   }
 }

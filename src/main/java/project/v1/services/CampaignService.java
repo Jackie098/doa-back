@@ -2,6 +2,7 @@ package project.v1.services;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -35,8 +36,12 @@ public class CampaignService {
   @Inject
   private AgentService agentService;
 
-  public Pageable<Campaign> list(Long userId, PageDTO pageDTO, CampaignStatusEnum status, Boolean displayMetrics) {
-    return campaignRepository.list(userId, pageDTO, status, displayMetrics);
+  public Pageable<Campaign> list(Long userId, PageDTO pageDTO, CampaignStatusEnum status) {
+    return campaignRepository.list(userId, pageDTO, status);
+  }
+
+  public List<Campaign> listByAgentIdInRange(Long agentId, List<Long> campaignIds) {
+    return campaignRepository.listByAgentIdInRange(agentId, campaignIds);
   }
 
   public Optional<Campaign> findById(Long campaignId) {

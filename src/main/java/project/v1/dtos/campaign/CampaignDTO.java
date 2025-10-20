@@ -4,9 +4,9 @@ import java.math.BigDecimal;
 import java.time.Instant;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import project.common.annotations.Mask;
 import project.common.annotations.enums.MaskType;
 import project.v1.entities.enums.CampaignStatusEnum;
@@ -15,7 +15,7 @@ import project.v1.entities.enums.CampaignTypeEnum;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 public class CampaignDTO {
   private Long id;
   private String slug;

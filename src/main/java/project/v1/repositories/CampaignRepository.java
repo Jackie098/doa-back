@@ -1,5 +1,6 @@
 package project.v1.repositories;
 
+import java.util.List;
 import java.util.Optional;
 
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
@@ -12,7 +13,7 @@ import project.v1.entities.enums.CampaignStatusEnum;
 
 @ApplicationScoped
 public class CampaignRepository implements PanacheRepository<Campaign> {
-  public Pageable<Campaign> list(Long userId, PageDTO pageDTO, CampaignStatusEnum status, Boolean metrics) {
+  public Pageable<Campaign> list(Long userId, PageDTO pageDTO, CampaignStatusEnum status) {
     PanacheQuery<Campaign> query = null;
 
     if (status == null) {
@@ -24,6 +25,10 @@ public class CampaignRepository implements PanacheRepository<Campaign> {
     query.page(pageDTO.getPagination());
 
     return new Pageable<Campaign>(query, pageDTO.getOneBasePage());
+  }
+
+  public List<Campaign> listByAgentIdInRange(Long agentId, List<Long> campaignIds) {
+    return find("agent.user.id = ?1 AND id IN ?2", agentId, campaignIds).list();
   }
 
   public Optional<Campaign> verifySlugAvailability(String slug, Long agentId) {

@@ -16,6 +16,7 @@ import project.common.exceptions.customs.ForbiddenException;
 import project.common.exceptions.customs.NotFoundException;
 import project.common.mappers.AgentMapper;
 import project.common.mappers.CampaignMapper;
+import project.common.mappers.CampaignMetricsMapper;
 import project.common.mappers.CampaignVolunteerMapper;
 import project.common.utils.SlugUtils;
 import project.v1.dtos.agent.AgentCreateDTO;
@@ -23,11 +24,13 @@ import project.v1.dtos.agent.AgentDTO;
 import project.v1.dtos.campaign.CampaignCreateDTO;
 import project.v1.dtos.campaign.CampaignDTO;
 import project.v1.dtos.campaign.CampaignUpdateDTO;
+import project.v1.dtos.campaignMetrics.CampaignMetricsDTO;
 import project.v1.dtos.campaignVolunteer.CampaignVolunteerDTO;
 import project.v1.dtos.common.ManyReferencesDTO;
 import project.v1.dtos.common.PageDTO;
 import project.v1.dtos.common.ValidSlugDTO;
 import project.v1.entities.Campaign;
+import project.v1.entities.CampaignMetrics;
 import project.v1.entities.CampaignVolunteer;
 import project.v1.entities.CharityAgent;
 import project.v1.entities.User;
@@ -45,6 +48,8 @@ public class AgentService {
   private CampaignService campaignService;
   @Inject
   private CampaignVolunteerService campaignVolunteerService;
+  @Inject
+  private CampaignMetricsService campaignMetricsService;
 
   @Inject
   private AgentRepository agentRepository;
@@ -139,7 +144,7 @@ public class AgentService {
   }
 
   public Pageable<CampaignDTO> listCampaign(CampaignStatusEnum status, Long userId, PageDTO pageDTO) {
-    var result = campaignService.list(userId, pageDTO, status, false);
+    var result = campaignService.list(userId, pageDTO, status);
     var mapped = CampaignMapper.fromEntityToPageableCampaignDTO(result);
 
     return mapped;
@@ -230,5 +235,23 @@ public class AgentService {
 
     // alterar todos pra accepted = true
     volunteers.forEach(v -> v.setIsAccepted(true));
+  }
+
+  public Pageable<CampaignMetricsDTO> listCampaignMetricsInRange(Long agentId, List<Long> ids , PageDTO pageDTO) {
+    Pageable<CampaignMetrics> result = campaignMetricsService.listMetricsInRange(ids, pageDTO);
+
+    List<Long> campaignIds = result.getData().stream()
+      .map(cm -> cm.getCampaignId())
+      .collect(Collectors.toList());
+    
+    List<Campaign> campaigns = campaignService.listByAgentIdInRange(agentId, campaignIds);
+
+    if (campaigns.size() != result.getTotalElements()) {
+      throw new ForbiddenException(MessageErrorEnum.CAMPAIGN_DONT_BELONG_USER.getMessage());
+    }
+
+    var mapped = CampaignMetricsMapper.fromEntityToPageableDTO(result);
+
+    return mapped;
   }
 }
