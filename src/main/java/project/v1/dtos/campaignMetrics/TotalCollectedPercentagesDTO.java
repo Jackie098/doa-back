@@ -1,5 +1,7 @@
 package project.v1.dtos.campaignMetrics;
 
+import java.math.BigDecimal;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CampaignMetricsDTO {
-  private Long campaignId;
-  private TicketInfoDTO tickets;
+public class TotalCollectedPercentagesDTO {
+    private BigDecimal donation;
+    private BigDecimal pickUp;
 }

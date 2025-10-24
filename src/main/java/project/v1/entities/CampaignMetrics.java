@@ -51,15 +51,21 @@ public class CampaignMetrics {
   private BigDecimal amountTicketsValidated;
   @Transient
   private BigDecimal amountTicketsGoal;
+  @Transient
+  private BigDecimal amountTicketsDonation;
 
   @Transient
   private BigDecimal tckPendingByCampGoal;
+  @Transient
+  private BigDecimal tckSentByCampGoal;
   @Transient
   private BigDecimal tckReceivedByCampGoal;
   @Transient
   private BigDecimal tckValidatedByCampGoal;
   @Transient
   private BigDecimal tckDonationByTotalCollected;
+  @Transient
+  private BigDecimal tckPickUpByTotalCollected;
 
   @PostLoad
   private void afterLoad() {
@@ -71,9 +77,12 @@ public class CampaignMetrics {
     this.amountTicketsSent = ticketPrice.multiply(ticketsSent);
     this.amountTicketsValidated = ticketPrice.multiply(ticketsValidated);
     this.amountTicketsGoal = ticketPrice.multiply(totalTickets);
-
+    this.amountTicketsDonation = ticketPrice.multiply(ticketsDonation);
+    
     // percentage based on campaign goal - totalTickets
     this.tckPendingByCampGoal = ticketsPending
+        .divide(totalTickets, 2, RoundingMode.FLOOR);
+    this.tckSentByCampGoal = ticketsSent
         .divide(totalTickets, 2, RoundingMode.FLOOR);
     this.tckReceivedByCampGoal = ticketsReceived
         .divide(totalTickets, 2, RoundingMode.FLOOR);
@@ -82,5 +91,6 @@ public class CampaignMetrics {
 
     // percentage based on total collection - ticketsSold
     this.tckDonationByTotalCollected = ticketsDonation.divide(ticketsSold, 2, RoundingMode.FLOOR);
+    this.tckPickUpByTotalCollected = ticketsPickUp.divide(ticketsSold, 2, RoundingMode.FLOOR);
   }
 }

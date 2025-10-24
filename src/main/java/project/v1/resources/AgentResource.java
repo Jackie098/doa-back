@@ -203,8 +203,8 @@ public class AgentResource {
   }
 
   @GET
-  @Path("/campaign/metrics/batch")
-  public Response batchCampaignMetrics(@Context SecurityContext ctx, @QueryParam("campaignIds") @NotBlank String campaignIdsStr, @QueryParam("page") Integer page, @QueryParam("size") Integer size) {
+  @Path("/metrics/campaign")
+  public Response campaignMetrics(@Context SecurityContext ctx, @QueryParam("campaignIds") @NotBlank String campaignIdsStr, @QueryParam("page") Integer page, @QueryParam("size") Integer size) {
     Long agentId = Long.parseLong(jwt.getClaim("id").toString());
     List<Long> campaignIds = ParseQueryParams.validateAndParseCampaignIds(campaignIdsStr, 20);
 

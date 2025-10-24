@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CampaignMetricsDTO {
-  private Long campaignId;
-  private TicketInfoDTO tickets;
+public class PercentageInfoDTO {
+    private CampaignGoalPercentagesDTO vsCampaignGoal;
+    private TotalCollectedPercentagesDTO vsTotalCollected;
 }
