@@ -92,6 +92,17 @@ public class AgentResource {
   }
 
   @GET
+  @Path("campaign/{id}")
+  public Response getCampaign(@Context SecurityContext ctx, @PathParam("id") Long id) {
+    Long agentId = Long.parseLong(jwt.getClaim("id").toString());
+    var result = service.findCampaignById(id, agentId);
+    
+    var response = ResponseModel.success(Response.Status.OK.getStatusCode(), result);
+
+    return Response.ok(response).build();
+  }
+
+  @GET
   @Path("/campaign/slug/verify")
   public Response verifyCampaignSlug(@QueryParam("slug") @NotBlank String slug) {
     Long agentId = Long.parseLong(jwt.getClaim("id").toString());

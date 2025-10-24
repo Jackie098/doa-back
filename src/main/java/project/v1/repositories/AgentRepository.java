@@ -33,4 +33,8 @@ public class AgentRepository implements PanacheRepository<CharityAgent> {
   public Optional<CharityAgent> findAgentByDocumentOrPix(String document, String pix) {
     return find("document = ?1 OR pixKey = ?2", document, pix).firstResultOptional();
   }
+
+  public Optional<CharityAgent> findByUserId(Long userId) {
+    return find("user.id = ?1", userId).firstResultOptional();
+  }
 }

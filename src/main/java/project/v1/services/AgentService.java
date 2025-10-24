@@ -150,6 +150,18 @@ public class AgentService {
     return mapped;
   }
 
+  public CampaignDTO findCampaignById(Long campaignId, Long userId) {
+    var campaigns = campaignService.listByAgentIdInRange(userId, List.of(campaignId));
+
+    if (campaigns.isEmpty()) {
+      throw new NotFoundException(MessageErrorEnum.CAMPAIGN_NOT_FOUND.getMessage());
+    }
+
+    var mapped = CampaignMapper.fromEntityToCampaignDTO(campaigns.getFirst());
+
+    return mapped;
+  }
+
   @Transactional
   public ValidSlugDTO verifyCampaignSlug(String slug, Long agentId) {
     return campaignService.verifySlug(slug, agentId);
