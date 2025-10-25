@@ -294,13 +294,14 @@ public class SeederService {
         throw new Exception("Esta campanha não tem voluntários!");
       }
 
-      CampaignVolunteer volunteer = getRandomActiveVolunteer(volunteers);
 
       int maxTicketsByDonation = campaign.getTotalTickets() /
           QUANTITY_DONATIONS_SPECIFIC_CAMPAIGN;
 
       for (int x = 1; x <= QUANTITY_DONATIONS_SPECIFIC_CAMPAIGN; x++) {
+        CampaignVolunteer volunteer = getRandomActiveVolunteer(volunteers);
         CampaignDonation donation = new CampaignDonation();
+
         donation.setCampaign(campaign);
         donation.setVolunteer(volunteer);
         donation.setDonorName("Doador " + x + " da campanha " + DONATIONS_SPECIFIC_CAMPAIGN_ID);
@@ -367,12 +368,12 @@ public class SeederService {
   }
 
   public CampaignVolunteer getRandomActiveVolunteer(List<CampaignVolunteer> volunteers) {
-    int randomIndex = ThreadLocalRandom.current().nextInt(0, volunteers.size());
-    CampaignVolunteer volunteer = volunteers.get(randomIndex);
+    CampaignVolunteer volunteer;
 
-    if (volunteer.getIsAccepted().equals(false)) {
-      getRandomActiveVolunteer(volunteers);
-    }
+    do {
+      int randomIndex = ThreadLocalRandom.current().nextInt(0, volunteers.size());
+      volunteer = volunteers.get(randomIndex);
+    } while (volunteer.getIsAccepted().equals(false));
 
     return volunteer;
   }
