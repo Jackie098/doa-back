@@ -18,6 +18,7 @@ import project.common.mappers.AgentMapper;
 import project.common.mappers.CampaignMapper;
 import project.common.mappers.CampaignMetricsMapper;
 import project.common.mappers.CampaignVolunteerMapper;
+import project.common.mappers.CampaignVolunteerRankingMapper;
 import project.common.utils.SlugUtils;
 import project.v1.dtos.agent.AgentCreateDTO;
 import project.v1.dtos.agent.AgentDTO;
@@ -26,12 +27,14 @@ import project.v1.dtos.campaign.CampaignDTO;
 import project.v1.dtos.campaign.CampaignUpdateDTO;
 import project.v1.dtos.campaignMetrics.CampaignMetricsDTO;
 import project.v1.dtos.campaignVolunteer.CampaignVolunteerDTO;
+import project.v1.dtos.campaignVolunteerRanking.VolunteerRawRankingDTO;
 import project.v1.dtos.common.ManyReferencesDTO;
 import project.v1.dtos.common.PageDTO;
 import project.v1.dtos.common.ValidSlugDTO;
 import project.v1.entities.Campaign;
 import project.v1.entities.CampaignMetrics;
 import project.v1.entities.CampaignVolunteer;
+import project.v1.entities.CampaignVolunteerRanking;
 import project.v1.entities.CharityAgent;
 import project.v1.entities.User;
 import project.v1.entities.enums.AgentStatusEnum;
@@ -49,14 +52,16 @@ public class AgentService {
   @Inject
   private CampaignVolunteerService campaignVolunteerService;
   @Inject
+  private CampaignVolunteerRankingService campaignVolunteerRankingService;
+  @Inject
   private CampaignMetricsService campaignMetricsService;
 
   @Inject
   private AgentRepository agentRepository;
 
-  public ValidSlugDTO verifySlug(String slug) {    
+  public ValidSlugDTO verifySlug(String slug) {
     slug = SlugUtils.cleanSlug(slug);
-    
+
     Optional<CharityAgent> agentExists = agentRepository.find("slug = ?1", slug).firstResultOptional();
 
     if (agentExists.isEmpty()) {
@@ -66,7 +71,8 @@ public class AgentService {
     String suggestedSlug = "";
     while (true) {
       suggestedSlug = SlugUtils.generateAgentSlug(slug);
-      Optional<CharityAgent> agentExistsSuggested = agentRepository.find("slug = ?1", suggestedSlug).firstResultOptional();
+      Optional<CharityAgent> agentExistsSuggested = agentRepository.find("slug = ?1", suggestedSlug)
+          .firstResultOptional();
 
       if (agentExistsSuggested.isEmpty()) {
         break;
@@ -166,7 +172,7 @@ public class AgentService {
   public ValidSlugDTO verifyCampaignSlug(String slug, Long agentId) {
     return campaignService.verifySlug(slug, agentId);
   }
-  
+
   @Transactional
   public CampaignDTO createCampaign(CampaignCreateDTO dto) {
     Campaign campaign = campaignService.create(dto);
@@ -222,6 +228,21 @@ public class AgentService {
   }
 
   @Transactional
+  public List<VolunteerRawRankingDTO> listVolunteerRankingCampaign(Long userId, Long campaignId) {
+    var campaigns = campaignService.listByAgentIdInRange(userId, List.of(campaignId));
+
+    if (campaigns.isEmpty()) {
+      throw new NotFoundException(MessageErrorEnum.CAMPAIGN_NOT_FOUND.getMessage());
+    }
+
+    List<CampaignVolunteerRanking> volunteer = campaignVolunteerRankingService
+        .listCampaignVolunteerRanking(campaignId);
+    List<VolunteerRawRankingDTO> mapped = CampaignVolunteerRankingMapper.fromEntityToListDTO(volunteer);
+
+    return mapped;
+  }
+
+  @Transactional
   public void acceptVolunteers(Long userId, Long campaignId, ManyReferencesDTO dto) {
     // validar se campanha pertence ao usuário
     Campaign campaign = campaignService.findById(campaignId)
@@ -249,13 +270,13 @@ public class AgentService {
     volunteers.forEach(v -> v.setIsAccepted(true));
   }
 
-  public Pageable<CampaignMetricsDTO> listCampaignMetricsInRange(Long agentId, List<Long> ids , PageDTO pageDTO) {
+  public Pageable<CampaignMetricsDTO> listCampaignMetricsInRange(Long agentId, List<Long> ids, PageDTO pageDTO) {
     Pageable<CampaignMetrics> result = campaignMetricsService.listMetricsInRange(ids, pageDTO);
 
     List<Long> campaignIds = result.getData().stream()
-      .map(cm -> cm.getCampaignId())
-      .collect(Collectors.toList());
-    
+        .map(cm -> cm.getCampaignId())
+        .collect(Collectors.toList());
+
     List<Campaign> campaigns = campaignService.listByAgentIdInRange(agentId, campaignIds);
 
     if (campaigns.size() != result.getTotalElements()) {

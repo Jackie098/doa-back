@@ -33,6 +33,7 @@ import project.v1.dtos.campaign.CampaignDTO;
 import project.v1.dtos.campaign.CampaignUpdateDTO;
 import project.v1.dtos.campaignMetrics.CampaignMetricsDTO;
 import project.v1.dtos.campaignVolunteer.CampaignVolunteerDTO;
+import project.v1.dtos.campaignVolunteerRanking.VolunteerRawRankingDTO;
 import project.v1.dtos.common.ManyReferencesDTO;
 import project.v1.dtos.common.PageDTO;
 import project.v1.entities.enums.CampaignStatusEnum;
@@ -53,7 +54,7 @@ public class AgentResource {
   @Path("/slug/verify")
   public Response verifySlug(@QueryParam("slug") @NotBlank String slug) {
     var result = service.verifySlug(slug);
-    
+
     var response = ResponseModel.success(Response.Status.OK.getStatusCode(), result);
 
     return Response.ok(response).build();
@@ -96,7 +97,7 @@ public class AgentResource {
   public Response getCampaign(@Context SecurityContext ctx, @PathParam("id") Long id) {
     Long agentId = Long.parseLong(jwt.getClaim("id").toString());
     var result = service.findCampaignById(id, agentId);
-    
+
     var response = ResponseModel.success(Response.Status.OK.getStatusCode(), result);
 
     return Response.ok(response).build();
@@ -106,14 +107,14 @@ public class AgentResource {
   @Path("/campaign/slug/verify")
   public Response verifyCampaignSlug(@QueryParam("slug") @NotBlank String slug) {
     Long agentId = Long.parseLong(jwt.getClaim("id").toString());
-    
+
     var result = service.verifyCampaignSlug(slug, agentId);
-    
+
     var response = ResponseModel.success(Response.Status.OK.getStatusCode(), result);
 
     return Response.ok(response).build();
   }
-  
+
   @POST
   @Path("/campaign")
   public Response createCampaign(@Context SecurityContext ctx, @Valid CampaignCreateDTO dto) {
@@ -214,12 +215,28 @@ public class AgentResource {
   }
 
   @GET
+  @Path("campaign/{id}/volunteer/ranking")
+  public Response listVolunteerRanking(@Context SecurityContext ctx, @PathParam("id") String campaignId) {
+    Long userId = Long.parseLong(jwt.getClaim("id").toString());
+
+    List<VolunteerRawRankingDTO> result = service.listVolunteerRankingCampaign(userId, Long.parseLong(campaignId));
+
+    var response = ResponseModel.success(Response.Status.OK.getStatusCode(),
+        result);
+
+    return Response.ok(response).build();
+  }
+
+  @GET
   @Path("/metrics/campaign")
-  public Response campaignMetrics(@Context SecurityContext ctx, @QueryParam("campaignIds") @NotBlank String campaignIdsStr, @QueryParam("page") Integer page, @QueryParam("size") Integer size) {
+  public Response campaignMetrics(@Context SecurityContext ctx,
+      @QueryParam("campaignIds") @NotBlank String campaignIdsStr, @QueryParam("page") Integer page,
+      @QueryParam("size") Integer size) {
     Long agentId = Long.parseLong(jwt.getClaim("id").toString());
     List<Long> campaignIds = ParseQueryParams.validateAndParseCampaignIds(campaignIdsStr, 20);
 
-    Pageable<CampaignMetricsDTO> result = service.listCampaignMetricsInRange(agentId, campaignIds, PageDTO.of(page, size));
+    Pageable<CampaignMetricsDTO> result = service.listCampaignMetricsInRange(agentId, campaignIds,
+        PageDTO.of(page, size));
     var response = ResponseModel.success(Response.Status.OK.getStatusCode(), result);
 
     return Response.ok(response).build();
