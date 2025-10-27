@@ -11,7 +11,7 @@ import project.v1.entities.queries.CampaignVolunteerRankingQuery;
 @ApplicationScoped
 public class CampaignVolunteerRankingRepository implements PanacheRepository<CampaignVolunteerRanking> {
 
-  public List<CampaignVolunteerRanking> listCampaignVolunteerRanking(Long campaignId) {
+  public List<CampaignVolunteerRanking> getRanking(Long campaignId) {
     return Panache.getSession()
         .createNativeQuery(CampaignVolunteerRankingQuery.FIND_BY_CAMPAIGN_ID,
             CampaignVolunteerRanking.class)

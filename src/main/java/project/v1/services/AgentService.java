@@ -236,10 +236,21 @@ public class AgentService {
     }
 
     List<CampaignVolunteerRanking> volunteer = campaignVolunteerRankingService
-        .listCampaignVolunteerRanking(campaignId);
+        .getRanking(campaignId);
     List<VolunteerRawRankingDTO> mapped = CampaignVolunteerRankingMapper.fromEntityToListDTO(volunteer);
 
     return mapped;
+  }
+
+  @Transactional
+  public String shareCampaignVolunteerRanking(Long userId, Long campaignId) {
+    var campaigns = campaignService.listByAgentIdInRange(userId, List.of(campaignId));
+
+    if (campaigns.isEmpty()) {
+      throw new NotFoundException(MessageErrorEnum.CAMPAIGN_NOT_FOUND.getMessage());
+    }
+
+    return campaignVolunteerRankingService.shareRanking(campaignId);
   }
 
   @Transactional

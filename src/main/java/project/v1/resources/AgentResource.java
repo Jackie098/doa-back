@@ -216,10 +216,23 @@ public class AgentResource {
 
   @GET
   @Path("campaign/{id}/volunteer/ranking")
-  public Response listVolunteerRanking(@Context SecurityContext ctx, @PathParam("id") String campaignId) {
+  public Response listCamapignVolunteerRanking(@Context SecurityContext ctx, @PathParam("id") String campaignId) {
     Long userId = Long.parseLong(jwt.getClaim("id").toString());
 
     List<VolunteerRawRankingDTO> result = service.listVolunteerRankingCampaign(userId, Long.parseLong(campaignId));
+
+    var response = ResponseModel.success(Response.Status.OK.getStatusCode(),
+        result);
+
+    return Response.ok(response).build();
+  }
+
+  @GET
+  @Path("campaign/{id}/volunteer/ranking/share")
+  public Response shareCampaignVolunteerRanking(@Context SecurityContext ctx, @PathParam("id") String campaignId) {
+    Long userId = Long.parseLong(jwt.getClaim("id").toString());
+
+    String result = service.shareCampaignVolunteerRanking(userId, Long.parseLong(campaignId));
 
     var response = ResponseModel.success(Response.Status.OK.getStatusCode(),
         result);
