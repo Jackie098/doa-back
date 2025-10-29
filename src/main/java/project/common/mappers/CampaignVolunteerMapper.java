@@ -6,7 +6,9 @@ import project.common.database.Pageable;
 import project.v1.dtos.campaign.CampaignDTO;
 import project.v1.dtos.campaignVolunteer.CampaignVolunteerDTO;
 import project.v1.dtos.campaignVolunteer.CampaignVolunteerExtDTO;
+import project.v1.dtos.campaignVolunteer.CampaignVolunteerMinDTO;
 import project.v1.dtos.user.UserDTO;
+import project.v1.dtos.user.UserExtMinDTO;
 import project.v1.entities.Campaign;
 import project.v1.entities.CampaignVolunteer;
 import project.v1.entities.User;
@@ -32,6 +34,16 @@ public class CampaignVolunteerMapper {
         .isAccepted(data.getIsAccepted())
         .user(userDto)
         .campaign(campaignDto)
+        .createdAt(data.getCreatedAt())
+        .build();
+  }
+
+  public static CampaignVolunteerMinDTO fromEntityToMinimal(CampaignVolunteer data) {
+    UserExtMinDTO userDto = UserMapper.fromEntityToExtMinimal(data.getUser());
+
+    return CampaignVolunteerMinDTO.builder()
+        .id(data.getId())
+        .user(userDto)
         .createdAt(data.getCreatedAt())
         .build();
   }

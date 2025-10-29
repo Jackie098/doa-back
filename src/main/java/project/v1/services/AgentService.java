@@ -15,6 +15,7 @@ import project.common.exceptions.customs.ConflictException;
 import project.common.exceptions.customs.ForbiddenException;
 import project.common.exceptions.customs.NotFoundException;
 import project.common.mappers.AgentMapper;
+import project.common.mappers.CampaignDonationMapper;
 import project.common.mappers.CampaignMapper;
 import project.common.mappers.CampaignMetricsMapper;
 import project.common.mappers.CampaignVolunteerMapper;
@@ -25,6 +26,7 @@ import project.v1.dtos.agent.AgentDTO;
 import project.v1.dtos.campaign.CampaignCreateDTO;
 import project.v1.dtos.campaign.CampaignDTO;
 import project.v1.dtos.campaign.CampaignUpdateDTO;
+import project.v1.dtos.campaignDonation.CampaignDonationMinDTO;
 import project.v1.dtos.campaignMetrics.CampaignMetricsDTO;
 import project.v1.dtos.campaignVolunteer.CampaignVolunteerDTO;
 import project.v1.dtos.campaignVolunteerRanking.VolunteerRawRankingDTO;
@@ -32,12 +34,14 @@ import project.v1.dtos.common.ManyReferencesDTO;
 import project.v1.dtos.common.PageDTO;
 import project.v1.dtos.common.ValidSlugDTO;
 import project.v1.entities.Campaign;
+import project.v1.entities.CampaignDonation;
 import project.v1.entities.CampaignMetrics;
 import project.v1.entities.CampaignVolunteer;
 import project.v1.entities.CampaignVolunteerRanking;
 import project.v1.entities.CharityAgent;
 import project.v1.entities.User;
 import project.v1.entities.enums.AgentStatusEnum;
+import project.v1.entities.enums.CampaignDonationStatusEnum;
 import project.v1.entities.enums.CampaignStatusEnum;
 import project.v1.repositories.AgentRepository;
 
@@ -55,6 +59,8 @@ public class AgentService {
   private CampaignVolunteerRankingService campaignVolunteerRankingService;
   @Inject
   private CampaignMetricsService campaignMetricsService;
+  @Inject
+  private CampaignDonationService campaignDonationService;
 
   @Inject
   private AgentRepository agentRepository;
@@ -295,6 +301,15 @@ public class AgentService {
     }
 
     var mapped = CampaignMetricsMapper.fromEntityToPageableDTO(result);
+
+    return mapped;
+  }
+
+  public Pageable<CampaignDonationMinDTO> listCampaignDonations(Long agentId, Long campaignId,
+      CampaignDonationStatusEnum status, PageDTO pageDTO) {
+    Pageable<CampaignDonation> result = campaignDonationService.listByCampaign(campaignId, agentId, status, pageDTO);
+
+    var mapped = CampaignDonationMapper.fromEntityToMinPageableDTO(result);
 
     return mapped;
   }

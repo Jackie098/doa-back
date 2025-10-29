@@ -31,11 +31,13 @@ import project.v1.dtos.agent.AgentCreateDTO;
 import project.v1.dtos.campaign.CampaignCreateDTO;
 import project.v1.dtos.campaign.CampaignDTO;
 import project.v1.dtos.campaign.CampaignUpdateDTO;
+import project.v1.dtos.campaignDonation.CampaignDonationMinDTO;
 import project.v1.dtos.campaignMetrics.CampaignMetricsDTO;
 import project.v1.dtos.campaignVolunteer.CampaignVolunteerDTO;
 import project.v1.dtos.campaignVolunteerRanking.VolunteerRawRankingDTO;
 import project.v1.dtos.common.ManyReferencesDTO;
 import project.v1.dtos.common.PageDTO;
+import project.v1.entities.enums.CampaignDonationStatusEnum;
 import project.v1.entities.enums.CampaignStatusEnum;
 import project.v1.services.AgentService;
 
@@ -250,6 +252,24 @@ public class AgentResource {
 
     Pageable<CampaignMetricsDTO> result = service.listCampaignMetricsInRange(agentId, campaignIds,
         PageDTO.of(page, size));
+    var response = ResponseModel.success(Response.Status.OK.getStatusCode(), result);
+
+    return Response.ok(response).build();
+  }
+
+  @GET
+  @Path("campaign/{id}/donation")
+  public Response listCampaignDonations(@Context SecurityContext ctx, @PathParam("id") String campaignId,
+      @QueryParam("status") CampaignDonationStatusEnum status,
+      @QueryParam("page") Integer page,
+      @QueryParam("size") Integer size) {
+
+    Long agentId = Long.parseLong(jwt.getClaim("id").toString());
+    Pageable<CampaignDonationMinDTO> result = service.listCampaignDonations(agentId,
+        Long.parseLong(campaignId),
+        status,
+        PageDTO.of(page, size));
+
     var response = ResponseModel.success(Response.Status.OK.getStatusCode(), result);
 
     return Response.ok(response).build();
