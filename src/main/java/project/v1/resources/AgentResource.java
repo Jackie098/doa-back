@@ -37,6 +37,7 @@ import project.v1.dtos.campaignVolunteer.CampaignVolunteerDTO;
 import project.v1.dtos.campaignVolunteerRanking.VolunteerRawRankingDTO;
 import project.v1.dtos.common.ManyReferencesDTO;
 import project.v1.dtos.common.PageDTO;
+import project.v1.dtos.common.ValidateDTO;
 import project.v1.entities.enums.CampaignDonationStatusEnum;
 import project.v1.entities.enums.CampaignStatusEnum;
 import project.v1.services.AgentService;
@@ -271,6 +272,26 @@ public class AgentResource {
         PageDTO.of(page, size));
 
     var response = ResponseModel.success(Response.Status.OK.getStatusCode(), result);
+
+    return Response.ok(response).build();
+  }
+
+  @PATCH
+  @Path("campaign/{campaignId}/donation/{donationId}/validate")
+  public Response validateCampaignDonation(
+      @Context SecurityContext ctx,
+      @PathParam("campaignId") String campaignId,
+      @PathParam("donationId") String donationId,
+      @Valid ValidateDTO dto) {
+
+    Long agentId = Long.parseLong(jwt.getClaim("id").toString());
+    service.validateCampaignDonation(
+        agentId,
+        Long.parseLong(campaignId),
+        Long.parseLong(donationId),
+        dto);
+
+    var response = ResponseModel.success(Response.Status.OK.getStatusCode());
 
     return Response.ok(response).build();
   }

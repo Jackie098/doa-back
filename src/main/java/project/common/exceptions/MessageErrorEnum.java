@@ -19,7 +19,8 @@ public enum MessageErrorEnum {
   SCHEDULED_CAMPAIGN_INVALID_START_DATE("A data de início não pode ser anterior a data atual"),
 
   CAMPAIGN_SLUG_INVALID_FORMAT("O formato do slug da campanha é inválido."),
-  CAMPAIGN_DUE_DATE_BEFORE_START_DATE("A data de encerramento não pode ser anterior a data de início da campanha"),
+  CAMPAIGN_DUE_DATE_BEFORE_START_DATE(
+      "A data de encerramento não pode ser anterior a data de início da campanha"),
   CAMPAIGN_SLUG_ALREADY_EXISTS("O código utilizado já está vinculado a outra campanha."),
   CAMPAIGN_FINISH_ONLY_STATUS_ACTIVE("É possível finalizar somente uma campanha ativa."),
   CAMPAIGN_PASSED_DEADLINE("O prazo de encerramento desta campanha venceu."),
@@ -55,9 +56,15 @@ public enum MessageErrorEnum {
       "A quantidade de tickets disponíveis é menor do que o solicitado."),
   CAMPAIGN_METRICS_NO_TICKETS("Não há mais tickets disponíveis para esta campanha."),
 
-  VOLUNTEERS_DONT_BELONGS_CAMPAIGN("Usuários não encontrados, não vinculados à esta campanha ou já foram aceitos."),
+  VOLUNTEERS_DONT_BELONGS_CAMPAIGN(
+      "Usuários não encontrados, não vinculados à esta campanha ou já foram aceitos."),
   VOLUNTEER_NO_ACCEPTED_CANT_ADD_NEW_DONATION(
-      "O voluntário não pode inserir uma nova doação pois ainda não foi aceito na campanha.");
+      "O voluntário não pode inserir uma nova doação pois ainda não foi aceito na campanha."),
+
+  CAMPAIGN_DONATION_NOT_FOUND("Doação não encontrada!"),
+  CAMPAIGN_DONATION_DONT_BELONG_CAMPAIGN("A doação não pertence a esta campanha!"),
+  CAMPAIGN_DONATION_DONT_BELONG_AGENT("A doação não pertence ao usuário!"),
+  CAMPAIGN_DONATION_ONLY_SENT_CAN_BE_VALIDATED("Somente doações com status 'ENVIADO' podem ser validadas.");
 
   public String message;
 

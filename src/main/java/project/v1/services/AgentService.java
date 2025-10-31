@@ -1,5 +1,6 @@
 package project.v1.services;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -11,6 +12,7 @@ import jakarta.transaction.Transactional;
 import project.common.database.Pageable;
 import project.common.exceptions.MessageErrorEnum;
 import project.common.exceptions.customs.BadRequestException;
+import project.common.exceptions.customs.BusinessException;
 import project.common.exceptions.customs.ConflictException;
 import project.common.exceptions.customs.ForbiddenException;
 import project.common.exceptions.customs.NotFoundException;
@@ -33,6 +35,7 @@ import project.v1.dtos.campaignVolunteerRanking.VolunteerRawRankingDTO;
 import project.v1.dtos.common.ManyReferencesDTO;
 import project.v1.dtos.common.PageDTO;
 import project.v1.dtos.common.ValidSlugDTO;
+import project.v1.dtos.common.ValidateDTO;
 import project.v1.entities.Campaign;
 import project.v1.entities.CampaignDonation;
 import project.v1.entities.CampaignMetrics;
@@ -312,5 +315,26 @@ public class AgentService {
     var mapped = CampaignDonationMapper.fromEntityToMinPageableDTO(result);
 
     return mapped;
+  }
+
+  @Transactional
+  public void validateCampaignDonation(Long userId, Long campaignId, Long donationId, ValidateDTO dto) {
+    CampaignDonation donation = campaignDonationService.findById(donationId)
+        .orElseThrow(() -> new NotFoundException(MessageErrorEnum.CAMPAIGN_DONATION_NOT_FOUND.getMessage()));
+
+    if (donation.getCampaign().getId() != campaignId) {
+      throw new ForbiddenException(MessageErrorEnum.CAMPAIGN_DONATION_DONT_BELONG_CAMPAIGN.getMessage());
+    }
+
+    if (donation.getCampaign().getAgent().getUser().getId() != userId) {
+      throw new ForbiddenException(MessageErrorEnum.CAMPAIGN_DONATION_DONT_BELONG_AGENT.getMessage());
+    }
+
+    if (donation.getStatus() != CampaignDonationStatusEnum.SENT) {
+      throw new BusinessException(MessageErrorEnum.CAMPAIGN_DONATION_ONLY_SENT_CAN_BE_VALIDATED.getMessage(), 400);
+    }
+
+    donation.setStatus(CampaignDonationStatusEnum.VALIDATED);
+    // donation.setValidatedAt(Instant.now());
   }
 }

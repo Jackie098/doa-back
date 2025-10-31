@@ -1,5 +1,7 @@
 package project.v1.entities;
 
+import java.time.Instant;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -46,4 +48,7 @@ public class CampaignDonation extends BaseEntity {
 
   @Builder.Default
   private Boolean isDonation = false;
+
+  // @Column(columnDefinition = "timestamp", nullable = true)
+  // private Instant validatedAt;
 }

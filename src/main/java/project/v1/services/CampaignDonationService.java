@@ -1,5 +1,7 @@
 package project.v1.services;
 
+import java.util.Optional;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import project.common.database.Pageable;
@@ -15,6 +17,10 @@ public class CampaignDonationService {
 
   public void create(CampaignDonation donation) {
     repository.persist(donation);
+  }
+
+  public Optional<CampaignDonation> findById(Long id) {
+    return repository.findByIdOptional(id);
   }
 
   public Pageable<CampaignDonation> listByCampaign(Long campaignId, Long agentId, CampaignDonationStatusEnum status,

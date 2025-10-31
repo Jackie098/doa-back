@@ -7,8 +7,8 @@ import project.common.database.Pageable;
 import project.common.exceptions.MessageErrorEnum;
 import project.common.exceptions.customs.NotFoundException;
 import project.v1.dtos.agent.AgentDTO;
-import project.v1.dtos.agent.AgentValidateDTO;
 import project.v1.dtos.common.PageDTO;
+import project.v1.dtos.common.ValidateDTO;
 import project.v1.entities.CharityAgent;
 import project.v1.entities.enums.AgentStatusEnum;
 
@@ -22,7 +22,7 @@ public class AdminService {
   }
 
   @Transactional
-  public void validateAgent(AgentValidateDTO dto, Long agentId) {
+  public void validateAgent(ValidateDTO dto, Long agentId) {
     CharityAgent agent = agentService.findById(agentId)
         .orElseThrow(() -> new NotFoundException(MessageErrorEnum.AGENT_NOT_FOUND.getMessage()));
 

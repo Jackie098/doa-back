@@ -16,8 +16,8 @@ import jakarta.ws.rs.core.Response.Status;
 import project.common.database.Pageable;
 import project.common.requests.ResponseModel;
 import project.v1.dtos.agent.AgentDTO;
-import project.v1.dtos.agent.AgentValidateDTO;
 import project.v1.dtos.common.PageDTO;
+import project.v1.dtos.common.ValidateDTO;
 import project.v1.entities.enums.AgentStatusEnum;
 import project.v1.services.AdminService;
 
@@ -42,7 +42,7 @@ public class AdminResource {
 
   @PATCH
   @Path("/agent/{id}/validate")
-  public Response validateAgent(@PathParam("id") Long agentId, @Valid AgentValidateDTO dto) {
+  public Response validateAgent(@PathParam("id") Long agentId, @Valid ValidateDTO dto) {
     service.validateAgent(dto, agentId);
     return Response.status(Status.ACCEPTED.getStatusCode()).build();
   }
