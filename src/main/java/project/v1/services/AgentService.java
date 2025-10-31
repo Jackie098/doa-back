@@ -1,6 +1,5 @@
 package project.v1.services;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -22,6 +21,7 @@ import project.common.mappers.CampaignMapper;
 import project.common.mappers.CampaignMetricsMapper;
 import project.common.mappers.CampaignVolunteerMapper;
 import project.common.mappers.CampaignVolunteerRankingMapper;
+import project.common.utils.ObjectUtils;
 import project.common.utils.SlugUtils;
 import project.v1.dtos.agent.AgentCreateDTO;
 import project.v1.dtos.agent.AgentDTO;
@@ -29,6 +29,7 @@ import project.v1.dtos.campaign.CampaignCreateDTO;
 import project.v1.dtos.campaign.CampaignDTO;
 import project.v1.dtos.campaign.CampaignUpdateDTO;
 import project.v1.dtos.campaignDonation.CampaignDonationMinDTO;
+import project.v1.dtos.campaignDonation.CampaignDonationUpdateDTO;
 import project.v1.dtos.campaignMetrics.CampaignMetricsDTO;
 import project.v1.dtos.campaignVolunteer.CampaignVolunteerDTO;
 import project.v1.dtos.campaignVolunteerRanking.VolunteerRawRankingDTO;
@@ -336,5 +337,33 @@ public class AgentService {
 
     donation.setStatus(CampaignDonationStatusEnum.VALIDATED);
     // donation.setValidatedAt(Instant.now());
+  }
+
+  @Transactional
+  public CampaignDonationMinDTO updateCampaignDonation(Long userId, Long campaignId, Long donationId,
+      CampaignDonationUpdateDTO dto) {
+    System.out.println("dto: " + dto);
+    System.out.println("isEmptyUpdateDTO: " + campaignDonationService.isEmptyUpdateDTO(dto));
+    if (dto == null || ObjectUtils.allPropertiesEmptyDeep(dto)) {
+      throw new BadRequestException(MessageErrorEnum.CAMPAIGN_DONATION_UPDATE_WITHOUT_DATA.getMessage());
+    }
+
+    CampaignDonation donation = campaignDonationService.findById(donationId)
+        .orElseThrow(() -> new NotFoundException(MessageErrorEnum.CAMPAIGN_DONATION_NOT_FOUND.getMessage()));
+
+    if (donation.getCampaign().getId() != campaignId) {
+      throw new ForbiddenException(MessageErrorEnum.CAMPAIGN_DONATION_DONT_BELONG_CAMPAIGN.getMessage());
+    }
+
+    if (donation.getCampaign().getAgent().getUser().getId() != userId) {
+      throw new ForbiddenException(MessageErrorEnum.CAMPAIGN_DONATION_DONT_BELONG_AGENT.getMessage());
+    }
+
+    if (donation.getCampaign().getStatus() != CampaignStatusEnum.FINISHED) {
+      throw new BusinessException(MessageErrorEnum.CAMPAING_NON_FINISHED_CANNOT_UPDATE_DONATION.getMessage(), 400);
+    }
+
+    CampaignDonation updatedDonation = campaignDonationService.updateWhenCampaignFinished(donation, dto);
+    return CampaignDonationMapper.fromEntityToMinimal(updatedDonation);
   }
 }

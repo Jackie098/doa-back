@@ -32,6 +32,7 @@ import project.v1.dtos.campaign.CampaignCreateDTO;
 import project.v1.dtos.campaign.CampaignDTO;
 import project.v1.dtos.campaign.CampaignUpdateDTO;
 import project.v1.dtos.campaignDonation.CampaignDonationMinDTO;
+import project.v1.dtos.campaignDonation.CampaignDonationUpdateDTO;
 import project.v1.dtos.campaignMetrics.CampaignMetricsDTO;
 import project.v1.dtos.campaignVolunteer.CampaignVolunteerDTO;
 import project.v1.dtos.campaignVolunteerRanking.VolunteerRawRankingDTO;
@@ -293,6 +294,19 @@ public class AgentResource {
 
     var response = ResponseModel.success(Response.Status.OK.getStatusCode());
 
+    return Response.ok(response).build();
+  }
+
+  @PUT
+  @Path("campaign/{campaignId}/donation/{donationId}")
+  public Response updateCampaignDonation(@Context SecurityContext ctx, @PathParam("campaignId") String campaignId,
+      @PathParam("donationId") String donationId, @Valid CampaignDonationUpdateDTO dto) {
+    Long agentId = Long.parseLong(jwt.getClaim("id").toString());
+
+    CampaignDonationMinDTO result = service.updateCampaignDonation(agentId, Long.parseLong(campaignId),
+        Long.parseLong(donationId), dto);
+
+    var response = ResponseModel.success(Response.Status.OK.getStatusCode(), result);
     return Response.ok(response).build();
   }
 }

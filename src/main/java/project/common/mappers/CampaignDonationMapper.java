@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import project.common.database.Pageable;
 import project.v1.dtos.campaignDonation.CampaignDonationCreateDTO;
+import project.v1.dtos.campaignDonation.CampaignDonationDTO;
 import project.v1.dtos.campaignDonation.CampaignDonationMinDTO;
 import project.v1.dtos.campaignVolunteer.CampaignVolunteerMinDTO;
 import project.v1.entities.Campaign;
@@ -22,6 +23,19 @@ public class CampaignDonationMapper {
         .ticketQuantity(dto.getTicketQuantity())
         .status(dto.getStatus())
         .isDonation(dto.getIsDonation())
+        .build();
+  }
+
+  public static CampaignDonationDTO fromEntityToDTO(CampaignDonation entity) {
+    return CampaignDonationDTO.builder()
+        .id(entity.getId())
+        .donorName(entity.getDonorName())
+        .donorPhoneNumber(entity.getDonorPhoneNumber())
+        .ticketQuantity(entity.getTicketQuantity())
+        .status(entity.getStatus())
+        .isDonation(entity.getIsDonation())
+        .createdAt(entity.getCreatedAt())
+        .volunteer(CampaignVolunteerMapper.fromEntityToMinimal(entity.getVolunteer()))
         .build();
   }
 
