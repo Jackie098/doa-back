@@ -342,8 +342,6 @@ public class AgentService {
   @Transactional
   public CampaignDonationMinDTO updateCampaignDonation(Long userId, Long campaignId, Long donationId,
       CampaignDonationUpdateDTO dto) {
-    System.out.println("dto: " + dto);
-    System.out.println("isEmptyUpdateDTO: " + campaignDonationService.isEmptyUpdateDTO(dto));
     if (dto == null || ObjectUtils.allPropertiesEmptyDeep(dto)) {
       throw new BadRequestException(MessageErrorEnum.CAMPAIGN_DONATION_UPDATE_WITHOUT_DATA.getMessage());
     }

@@ -45,6 +45,7 @@ public class VolunteerResource {
     return Response.accepted().build();
   }
 
+  // @BeanParam
   @GET
   @Path("/campaign")
   public Response listCampaigns(@Context SecurityContext ctx,
