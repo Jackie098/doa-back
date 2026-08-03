@@ -60,6 +60,44 @@ If you want to learn more about building native executables, please consult <htt
 - Hibernate ORM with Panache ([guide](https://quarkus.io/guides/hibernate-orm-panache)): Simplify your persistence code for Hibernate ORM via the active record or the repository pattern
 - JDBC Driver - PostgreSQL ([guide](https://quarkus.io/guides/datasource)): Connect to the PostgreSQL database via JDBC
 
+## Estrutura técnica do projeto
+
+### Stack
+- Java 21 + Quarkus 3
+- Hibernate ORM com Panache
+- PostgreSQL
+- REST com serialização JSON (Jackson)
+
+### Organização de pastas (backend)
+- `src/main/java/project/common`: componentes compartilhados (configurações, exceções, filtros, mappers, seeds e utilitários).
+- `src/main/java/project/v1`: domínio principal da aplicação organizado em:
+  - `entities`: entidades JPA (ex.: `User`, `Campaign`, `CampaignDonation`, `CampaignVolunteer`, `CharityAgent`, `Person`);
+  - `repositories`: acesso a dados via Panache;
+  - `services`: regras de negócio;
+  - `resources`: endpoints REST;
+  - `dtos`: objetos de entrada/saída da API.
+- `src/main/resources`: configurações e scripts SQL de inicialização.
+
+### Banco de dados e inicialização
+- A configuração do datasource está em `src/main/resources/application.properties`.
+- O schema é recriado ao subir a aplicação em dev/test via:
+  - `quarkus.hibernate-orm.database.generation=drop-and-create`
+- O naming strategy físico é snake_case:
+  - `project.common.config.SnakeCasePhysicalNamingStrategy`
+- O seed por código roda no startup via:
+  - `project.common.beans.StartupBean` -> `SeederService.seed()`
+- O seed SQL complementar fica em:
+  - `src/main/resources/import.sql`
+
+### Entidade base de autenticação/usuário
+- Tabela: `users`
+- Entidade: `project.v1.entities.User`
+- Campos centrais:
+  - `email`, `password`, `name`, `phoneNumber`
+  - `type` (`ADM`, `CHARITY_AGENT`, `VOLUNTEER`)
+  - `isActive`, `firstAccess`, `isCharityAgentMember`
+  - `createdAt`, `updatedAt` (herdados de `BaseEntity`)
+
 ## Provided Code
 
 ### Hibernate ORM
